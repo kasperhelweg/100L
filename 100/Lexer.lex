@@ -29,6 +29,7 @@
 
  }
 
+
 rule Token = parse
     [` ` `\t` `\r`]+    { Token lexbuf } (* whitespace *)
     | "/*" ([^`*`] | `*`[^`/`])* "*/"
@@ -42,6 +43,12 @@ rule Token = parse
                              | SOME i => Parser.NUM (i, getPos lexbuf) }
   | [`a`-`z` `A`-`Z`] [`a`-`z` `A`-`Z` `0`-`9` `_`]*
                         { keyword (getLexeme lexbuf,getPos lexbuf) }
+  | [`'` `\047`][`\`]?[`a`-`z` `A`-`Z` `0`-`9` ` ` `!` `#` `$` `%` `&` `(` `)` `*` `,` `-` `.` `/` `:` `;` `<` `=` `>` `?` `@` `[` `\` `]` `^` `_` `\`` `{` `|` `}` `~`][`'` `\047`]
+                        { case Char.fromString (getLexeme lexbuf) of
+                            NONE   => lexerError lexbuf "Not a char"
+                          | SOME c => Parser.CHAR (valOf (SOME c), getPos lexbuf) } 
+  | "=="           { Parser.EQUALS (getPos lexbuf) }
+
   | `+`                 { Parser.PLUS (getPos lexbuf) }
   | `-`                 { Parser.MINUS (getPos lexbuf) }
   | `<`                 { Parser.LESS (getPos lexbuf) }
