@@ -4,6 +4,7 @@
 %token <(int*int)> PLUS MINUS LESS ASSIGN EQUALS
 %token <(int*int)> LPAR RPAR
 %token <char*(int*int)> CHAR
+%token <string*(int*int)> STRING
 %token <(int*int)> COMMA SEMICOLON EOF
 
 %right ELSE

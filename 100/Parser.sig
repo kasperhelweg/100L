@@ -16,7 +16,8 @@ type t__14__ = (int*int)
 type t__15__ = (int*int)
 type t__16__ = (int*int)
 type t__17__ = (int*int)
-type t__18__ = (int*int)
+type t__18__ = string*(int*int)
+type t__19__ = (int*int)
 in
 datatype token =
     ASSIGN of t__1__
@@ -36,7 +37,8 @@ datatype token =
   | RETURN of t__15__
   | RPAR of t__16__
   | SEMICOLON of t__17__
-  | THEN of t__18__
+  | STRING of t__18__
+  | THEN of t__19__
 end;
 
 val Prog :

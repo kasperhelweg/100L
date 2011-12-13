@@ -34,20 +34,30 @@ rule Token = parse
     [` ` `\t` `\r`]+    { Token lexbuf } (* whitespace *)
     | "/*" ([^`*`] | `*`[^`/`])* "*/"
 			{ Token lexbuf } (* comment *)
+
   | [`\n` `\012`]       { currentLine := !currentLine+1;
                           lineStartPos :=  getLexemeStart lexbuf
 			                   :: !lineStartPos;
+
                           Token lexbuf } (* newlines *)
   | [`0`-`9`]+          { case Int.fromString (getLexeme lexbuf) of
                                NONE   => lexerError lexbuf "Bad integer"
                              | SOME i => Parser.NUM (i, getPos lexbuf) }
+
   | [`a`-`z` `A`-`Z`] [`a`-`z` `A`-`Z` `0`-`9` `_`]*
                         { keyword (getLexeme lexbuf,getPos lexbuf) }
+
   | [`'` `\047`][`\`]?[`a`-`z` `A`-`Z` `0`-`9` ` ` `!` `#` `$` `%` `&` `(` `)` `*` `,` `-` `.` `/` `:` `;` `<` `=` `>` `?` `@` `[` `\` `]` `^` `_` `\`` `{` `|` `}` `~`][`'` `\047`]
                         { case Char.fromString (getLexeme lexbuf) of
                             NONE   => lexerError lexbuf "Not a char"
                           | SOME c => Parser.CHAR (valOf (SOME c), getPos lexbuf) } 
-  | "=="           { Parser.EQUALS (getPos lexbuf) }
+
+  (* The string expression below is set to '+', meaning that it's not possible to write "", i.e. a null string. It's fine to write " " however. Maybe it should be set to '*'? *)
+  | [`\042` `"`][`a`-`z` `A`-`Z` `0`-`9` ` ` `!` `#` `$` `%` `&` `(` `)` `*` `,` `-` `.` `/` `:` `;` `<` `=` `>` `?` `@` `[` `\` `]` `^` `_` `\`` `{` `|` `}` `~`]+[`\042` `"`]
+                        { Parser.STRING (getLexeme lexbuf, getPos lexbuf) }
+
+  (* This one is probably broken for now *)
+  | "=="                { Parser.EQUALS (getPos lexbuf) } 
 
   | `+`                 { Parser.PLUS (getPos lexbuf) }
   | `-`                 { Parser.MINUS (getPos lexbuf) }
