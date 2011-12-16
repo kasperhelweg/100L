@@ -9,8 +9,10 @@ main:
 	addi	$29, $29, -8
 	sw	$31, 4($29)
 	sw	$16, 0($29)
-	ori	$0, $0, 100
-# was:	ori	0, 0, 100
+	ori	$2, $0, 0
+# was:	ori	_return__1_, 0, 0
+# 	ori	2,_return__1_,0
+	j	main_exit
 main_exit:
 	lw	$16, 0($29)
 	lw	$31, 4($29)
