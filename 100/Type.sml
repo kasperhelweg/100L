@@ -2,13 +2,14 @@ structure Type :> Type =
 struct
 
   (* Use "raise Error (message,position)" for error messages *)
-  exception Error of string*(int*int)
-
+exception Error of string*(int*int)
+                     
   type pos = int*int
 
   datatype Type = Int
-
+                  
   fun convertType (S100.Int _) = Int
+   
 
   fun getName (S100.Val (f,p)) = f
 

@@ -38,6 +38,7 @@ FunDecs : Type Sid LPAR Decs RPAR Stat FunDecs
 ;
 
 Type :	  INT		{ S100.Int $1 }
+
 ;
 
 Decs :	  Decs1 Dec	{ $1 @ [$2] }

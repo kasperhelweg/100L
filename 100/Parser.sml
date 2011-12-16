@@ -192,7 +192,7 @@ val d__1__ = peekVal 0 : (int*int)
 in
 ( S100.Int (d__1__) ) end : S100.Type))
 ;
-(* Rule 5, file Parser.grm, line 43 *)
+(* Rule 5, file Parser.grm, line 44 *)
 val _ = update_ yyact 5
 (fn () => repr(let
 val d__1__ = peekVal 1 : S100.Dec list
@@ -200,13 +200,13 @@ val d__2__ = peekVal 0 : S100.Dec
 in
 ( (d__1__) @ [(d__2__)] ) end : S100.Dec list))
 ;
-(* Rule 6, file Parser.grm, line 44 *)
+(* Rule 6, file Parser.grm, line 45 *)
 val _ = update_ yyact 6
 (fn () => repr(let
 in
 ( [] ) end : S100.Dec list))
 ;
-(* Rule 7, file Parser.grm, line 48 *)
+(* Rule 7, file Parser.grm, line 49 *)
 val _ = update_ yyact 7
 (fn () => repr(let
 val d__1__ = peekVal 2 : S100.Dec list
@@ -215,13 +215,13 @@ val d__3__ = peekVal 0 : (int*int)
 in
 ( (d__1__) @ [(d__2__)] ) end : S100.Dec list))
 ;
-(* Rule 8, file Parser.grm, line 49 *)
+(* Rule 8, file Parser.grm, line 50 *)
 val _ = update_ yyact 8
 (fn () => repr(let
 in
 ( [] ) end : S100.Dec list))
 ;
-(* Rule 9, file Parser.grm, line 52 *)
+(* Rule 9, file Parser.grm, line 53 *)
 val _ = update_ yyact 9
 (fn () => repr(let
 val d__1__ = peekVal 1 : S100.Type
@@ -229,14 +229,14 @@ val d__2__ = peekVal 0 : S100.Sid list
 in
 ( ((d__1__), (d__2__)) ) end : S100.Dec))
 ;
-(* Rule 10, file Parser.grm, line 55 *)
+(* Rule 10, file Parser.grm, line 56 *)
 val _ = update_ yyact 10
 (fn () => repr(let
 val d__1__ = peekVal 0 : string*(int*int)
 in
 ( S100.Val (d__1__) ) end : S100.Sid))
 ;
-(* Rule 11, file Parser.grm, line 59 *)
+(* Rule 11, file Parser.grm, line 60 *)
 val _ = update_ yyact 11
 (fn () => repr(let
 val d__1__ = peekVal 2 : S100.Sid
@@ -245,14 +245,14 @@ val d__3__ = peekVal 0 : S100.Sid list
 in
 ( (d__1__) :: (d__3__) ) end : S100.Sid list))
 ;
-(* Rule 12, file Parser.grm, line 60 *)
+(* Rule 12, file Parser.grm, line 61 *)
 val _ = update_ yyact 12
 (fn () => repr(let
 val d__1__ = peekVal 0 : S100.Sid
 in
 ( [(d__1__)] ) end : S100.Sid list))
 ;
-(* Rule 13, file Parser.grm, line 62 *)
+(* Rule 13, file Parser.grm, line 63 *)
 val _ = update_ yyact 13
 (fn () => repr(let
 val d__1__ = peekVal 1 : S100.Exp
@@ -260,7 +260,7 @@ val d__2__ = peekVal 0 : (int*int)
 in
 ( S100.EX (d__1__) ) end : S100.Stat))
 ;
-(* Rule 14, file Parser.grm, line 64 *)
+(* Rule 14, file Parser.grm, line 65 *)
 val _ = update_ yyact 14
 (fn () => repr(let
 val d__1__ = peekVal 4 : (int*int)
@@ -271,7 +271,7 @@ val d__5__ = peekVal 0 : S100.Stat
 in
 ( S100.If ((d__3__),(d__5__),(d__1__)) ) end : S100.Stat))
 ;
-(* Rule 15, file Parser.grm, line 66 *)
+(* Rule 15, file Parser.grm, line 67 *)
 val _ = update_ yyact 15
 (fn () => repr(let
 val d__1__ = peekVal 6 : (int*int)
@@ -284,7 +284,7 @@ val d__7__ = peekVal 0 : S100.Stat
 in
 ( S100.IfElse ((d__3__),(d__5__),(d__7__),(d__1__)) ) end : S100.Stat))
 ;
-(* Rule 16, file Parser.grm, line 68 *)
+(* Rule 16, file Parser.grm, line 69 *)
 val _ = update_ yyact 16
 (fn () => repr(let
 val d__1__ = peekVal 2 : (int*int)
@@ -293,21 +293,21 @@ val d__3__ = peekVal 0 : (int*int)
 in
 ( S100.Return ((d__2__),(d__1__)) ) end : S100.Stat))
 ;
-(* Rule 17, file Parser.grm, line 71 *)
+(* Rule 17, file Parser.grm, line 72 *)
 val _ = update_ yyact 17
 (fn () => repr(let
 val d__1__ = peekVal 0 : int*(int*int)
 in
 ( S100.NumConst (d__1__) ) end : S100.Exp))
 ;
-(* Rule 18, file Parser.grm, line 72 *)
+(* Rule 18, file Parser.grm, line 73 *)
 val _ = update_ yyact 18
 (fn () => repr(let
 val d__1__ = peekVal 0 : S100.Lval
 in
 ( S100.LV (d__1__) ) end : S100.Exp))
 ;
-(* Rule 19, file Parser.grm, line 74 *)
+(* Rule 19, file Parser.grm, line 75 *)
 val _ = update_ yyact 19
 (fn () => repr(let
 val d__1__ = peekVal 2 : S100.Lval
@@ -316,7 +316,7 @@ val d__3__ = peekVal 0 : S100.Exp
 in
 ( S100.Assign ((d__1__),(d__3__),(d__2__)) ) end : S100.Exp))
 ;
-(* Rule 20, file Parser.grm, line 75 *)
+(* Rule 20, file Parser.grm, line 76 *)
 val _ = update_ yyact 20
 (fn () => repr(let
 val d__1__ = peekVal 2 : S100.Exp
@@ -325,7 +325,7 @@ val d__3__ = peekVal 0 : S100.Exp
 in
 ( S100.Plus ((d__1__), (d__3__), (d__2__)) ) end : S100.Exp))
 ;
-(* Rule 21, file Parser.grm, line 76 *)
+(* Rule 21, file Parser.grm, line 77 *)
 val _ = update_ yyact 21
 (fn () => repr(let
 val d__1__ = peekVal 2 : S100.Exp
@@ -334,7 +334,7 @@ val d__3__ = peekVal 0 : S100.Exp
 in
 ( S100.Minus ((d__1__), (d__3__), (d__2__)) ) end : S100.Exp))
 ;
-(* Rule 22, file Parser.grm, line 77 *)
+(* Rule 22, file Parser.grm, line 78 *)
 val _ = update_ yyact 22
 (fn () => repr(let
 val d__1__ = peekVal 2 : S100.Exp
@@ -343,7 +343,7 @@ val d__3__ = peekVal 0 : S100.Exp
 in
 ( S100.Less ((d__1__), (d__3__), (d__2__)) ) end : S100.Exp))
 ;
-(* Rule 23, file Parser.grm, line 79 *)
+(* Rule 23, file Parser.grm, line 80 *)
 val _ = update_ yyact 23
 (fn () => repr(let
 val d__1__ = peekVal 3 : string*(int*int)
@@ -353,7 +353,7 @@ val d__4__ = peekVal 0 : (int*int)
 in
 ( S100.Call (#1 (d__1__), (d__3__), (d__2__)) ) end : S100.Exp))
 ;
-(* Rule 24, file Parser.grm, line 81 *)
+(* Rule 24, file Parser.grm, line 82 *)
 val _ = update_ yyact 24
 (fn () => repr(let
 val d__1__ = peekVal 2 : (int*int)
@@ -362,27 +362,27 @@ val d__3__ = peekVal 0 : (int*int)
 in
 ( (d__2__) ) end : S100.Exp))
 ;
-(* Rule 25, file Parser.grm, line 84 *)
+(* Rule 25, file Parser.grm, line 85 *)
 val _ = update_ yyact 25
 (fn () => repr(let
 in
 ( [] ) end : S100.Exp list))
 ;
-(* Rule 26, file Parser.grm, line 85 *)
+(* Rule 26, file Parser.grm, line 86 *)
 val _ = update_ yyact 26
 (fn () => repr(let
 val d__1__ = peekVal 0 : S100.Exp list
 in
 ( (d__1__) ) end : S100.Exp list))
 ;
-(* Rule 27, file Parser.grm, line 88 *)
+(* Rule 27, file Parser.grm, line 89 *)
 val _ = update_ yyact 27
 (fn () => repr(let
 val d__1__ = peekVal 0 : S100.Exp
 in
 ( [(d__1__)] ) end : S100.Exp list))
 ;
-(* Rule 28, file Parser.grm, line 90 *)
+(* Rule 28, file Parser.grm, line 91 *)
 val _ = update_ yyact 28
 (fn () => repr(let
 val d__1__ = peekVal 2 : S100.Exp
@@ -391,7 +391,7 @@ val d__3__ = peekVal 0 : S100.Exp list
 in
 ( (d__1__) :: (d__3__) ) end : S100.Exp list))
 ;
-(* Rule 29, file Parser.grm, line 92 *)
+(* Rule 29, file Parser.grm, line 93 *)
 val _ = update_ yyact 29
 (fn () => repr(let
 val d__1__ = peekVal 0 : string*(int*int)
