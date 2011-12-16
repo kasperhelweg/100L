@@ -7,9 +7,9 @@ exception Error of string*(int*int)
   type pos = int*int
 
   datatype Type = Int
+                | Char
                   
   fun convertType (S100.Int _) = Int
-   
 
   fun getName (S100.Val (f,p)) = f
 
@@ -25,6 +25,7 @@ exception Error of string*(int*int)
   fun checkExp e vtable ftable =
     case e of
       S100.NumConst _ => Int
+    (*| S100.CharConst _ => Char*)
     | S100.LV lv => checkLval lv vtable ftable
     | S100.Assign (lv,e1,p) =>
         let

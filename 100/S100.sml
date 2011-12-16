@@ -7,6 +7,7 @@ struct
 
   datatype Type
     = Int of pos
+    | Char of pos
 
 
   datatype Sid
@@ -17,7 +18,7 @@ struct
 
   datatype Exp
     = NumConst of int * pos
-(*    | CharConst of char * pos *)
+    | CharConst of char * pos  
 (*    | StringConst of string * pos *)
     | LV of Lval
     | Assign of Lval * Exp * pos
@@ -38,7 +39,7 @@ struct
     | IfElse of Exp * Stat * Stat * pos
 (*    | While of Exp * Stat * pos *)
     | Return of Exp * pos
-(*    | Block of Dec list * Stat list * pos *)
+    | Block of Dec list * Stat list * pos 
 
   type FunDec = Type * Sid * Dec list * Stat * pos
 

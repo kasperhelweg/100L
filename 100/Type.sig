@@ -2,6 +2,7 @@ signature Type =
 sig
 
   datatype Type = Int
+                | Char
 
   exception Error of string*(int*int)
 
