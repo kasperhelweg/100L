@@ -27,7 +27,7 @@ fun keyword (s, pos) =
        | "else"         => Parser.ELSE pos
        | "while"        => Parser.WHILE pos
        | "int"          => (TextIO.output(TextIO.stdOut, "encountered int\n") ; Parser.INT pos)
-	      | "char"         => (TextIO.output(TextIO.stdOut, "encountered char\n") ; Parser.CHAR pos)
+       | "char"         => (TextIO.output(TextIO.stdOut, "encountered char\n") ; Parser.CHAR pos)
        | "return"       => (TextIO.output(TextIO.stdOut, "encountered return\n") ; Parser.RETURN pos)
        | _              => Parser.ID (s, pos)
 
@@ -63,9 +63,7 @@ and action_7 lexbuf = (
 and action_6 lexbuf = (
  Parser.STRINGCONST (getLexeme lexbuf, getPos lexbuf) )
 and action_5 lexbuf = (
- case Char.fromString (getLexeme lexbuf) of
-                            NONE   => lexerError lexbuf "Not a char"
-                          | SOME c => Parser.CHARCONST (valOf (SOME c), getPos lexbuf) )
+Parser.CHARCONST ((fn s => let val c = String.sub(s, 1) in case c of #"\\"  => String.sub(s, 2) | _ => c end) (getLexeme lexbuf), getPos lexbuf) )
 and action_4 lexbuf = (
  keyword (getLexeme lexbuf,getPos lexbuf) )
 and action_3 lexbuf = (

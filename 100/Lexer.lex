@@ -25,7 +25,7 @@ fun keyword (s, pos) =
        | "else"         => Parser.ELSE pos
        | "while"        => Parser.WHILE pos
        | "int"          => (TextIO.output(TextIO.stdOut, "encountered int\n") ; Parser.INT pos)
-	      | "char"         => (TextIO.output(TextIO.stdOut, "encountered char\n") ; Parser.CHAR pos)
+       | "char"         => (TextIO.output(TextIO.stdOut, "encountered char\n") ; Parser.CHAR pos)
        | "return"       => (TextIO.output(TextIO.stdOut, "encountered return\n") ; Parser.RETURN pos)
        | _              => Parser.ID (s, pos)
 
@@ -49,13 +49,17 @@ rule Token = parse
   | [`a`-`z` `A`-`Z`] [`a`-`z` `A`-`Z` `0`-`9` `_`]*
                         { keyword (getLexeme lexbuf,getPos lexbuf) }
 
+(* | `\039` `\\`? [`a`-`z` `A`-`Z` `0`-`9` ` ` `!` `#` `$` `%` `&` `(` `)` `*` `,` `-` `.` `/` `:` `;` `<` `=` `>` `?` `@` `[` `\` `]` `^` `_` `\`` `{` `|` `}` `~`] `\039` *)
+
+ 
   | `'`
      ([`a`-`z` `A`-`Z` `0`-`9` ` ` `!` `#` `$` `%` `&` `(` `)` `*` `,` `-` `.` `/` `:` `;` `<` `=` `>` `?` `@` `[` `]` `^` `_` ``` `{` `|` `}` `~`] | 
       [`\`][`a`-`z` `A`-`Z` `0`-`9` ` ` `!` `#` `$` `%` `&` `(` `)` `*` `,` `-` `.` `/` `:` `;` `<` `=` `>` `?` `@` `[` `]` `^` `_` ``` `{` `|` `}` `~` `\` `'` `"`])
     `'`
-                        { case Char.fromString (getLexeme lexbuf) of
+                           {Parser.CHARCONST ((fn s => let val c = String.sub(s, 1) in case c of #"\\"  => String.sub(s, 2) | _ => c end) (getLexeme lexbuf), getPos lexbuf) }
+                        (* { case Char.fromString (getLexeme lexbuf) of
                             NONE   => lexerError lexbuf "Not a char"
-                          | SOME c => Parser.CHARCONST (valOf (SOME c), getPos lexbuf) } 
+                          | SOME c =>  (TextIO.output(TextIO.stdOut, getLexeme lexbuf) ; Parser.CHARCONST (valOf (SOME c), getPos lexbuf)) } *)
 
   (* The string expression below is set to '+', meaning that it's not possible to write "", i.e. a null string. It's fine to write " " however. Maybe it should be set to '*'? *)
   | [`"`][`a`-`z` `A`-`Z` `0`-`9` ` ` `!` `#` `$` `%` `&` `(` `)` `*` `,` `-` `.` `/` `:` `;` `<` `=` `>` `?` `@` `[` `]` `^` `_` ``` `{` `|` `}` `~`]+[`"`]
