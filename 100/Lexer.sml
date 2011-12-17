@@ -20,14 +20,14 @@ local open Obj Lexing in
  fun lexerError lexbuf s = 
      raise LexicalError (s, getPos lexbuf)
 
- fun keyword (s, pos) =
+fun keyword (s, pos) =
      case s of
          "if"           => Parser.IF pos
        | "then"         => Parser.THEN pos
        | "else"         => Parser.ELSE pos
        | "while"        => Parser.WHILE pos
-       | "int"          => Parser.INT pos
-       | "return"       => Parser.RETURN pos
+       | "int"          => (TextIO.output(TextIO.stdOut, "encountered int\n") ; Parser.INT pos)
+       | "return"       => (TextIO.output(TextIO.stdOut, "encountered return\n") ; Parser.RETURN pos)
        | _              => Parser.ID (s, pos)
 
  
@@ -60,11 +60,11 @@ and action_8 lexbuf = (
 and action_7 lexbuf = (
  Parser.EQUALS (getPos lexbuf) )
 and action_6 lexbuf = (
- Parser.STRING (getLexeme lexbuf, getPos lexbuf) )
+ Parser.STRINGCONST (getLexeme lexbuf, getPos lexbuf) )
 and action_5 lexbuf = (
  case Char.fromString (getLexeme lexbuf) of
                             NONE   => lexerError lexbuf "Not a char"
-                          | SOME c => Parser.CHAR (valOf (SOME c), getPos lexbuf) )
+                          | SOME c => Parser.CHARCONST (valOf (SOME c), getPos lexbuf) )
 and action_4 lexbuf = (
  keyword (getLexeme lexbuf,getPos lexbuf) )
 and action_3 lexbuf = (

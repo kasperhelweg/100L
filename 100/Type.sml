@@ -10,6 +10,7 @@ exception Error of string*(int*int)
                 | Char
                   
   fun convertType (S100.Int _) = Int
+    | convertType (S100.Char _) = Char
 
   fun getName (S100.Val (f,p)) = f
 
@@ -25,7 +26,7 @@ exception Error of string*(int*int)
   fun checkExp e vtable ftable =
     case e of
       S100.NumConst _ => Int
-    (*| S100.CharConst _ => Char*)
+    | S100.CharConst _ => Char
     | S100.LV lv => checkLval lv vtable ftable
     | S100.Assign (lv,e1,p) =>
         let
@@ -80,13 +81,14 @@ exception Error of string*(int*int)
     | S100.If (e,s1,p) =>
         if checkExp e vtable ftable = Int
 	then checkStat s1 vtable ftable
-	else raise Error ("Condition should be integer",p)
+	else raise Error ("Condition should be integer", p)
     | S100.IfElse (e,s1,s2,p) =>
         if checkExp e vtable ftable = Int
 	then (checkStat s1 vtable ftable;
 	      checkStat s2 vtable ftable)
-	else raise Error ("Condition should be integer",p)
+	else raise Error ("Condition should be integer", p)
     | S100.Return (e,p) => ()
+    | S100.Block (d, s, p) => raise Error ("NO", p)
 
   fun checkFunDec (t,sf,decs,body,p) ftable =
         checkStat body (checkDecs decs) ftable

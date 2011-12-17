@@ -1,11 +1,11 @@
 %token <string*(int*int)> ID
 %token <int*(int*int)> NUM
-%token <(int*int)> IF THEN ELSE INT RETURN WHILE
+%token <(int*int)> IF THEN ELSE INT CHAR RETURN WHILE
 %token <(int*int)> PLUS MINUS LESS ASSIGN EQUALS POINTER
 %token <(int*int)> LPAR RPAR
 %token <(int*int)> LCURL RCURL
-%token <char*(int*int)> CHAR
-%token <string*(int*int)> STRING
+%token <char*(int*int)> CHARCONST
+%token <string*(int*int)> STRINGCONST
 %token <(int*int)> COMMA SEMICOLON EOF
 
 %right ELSE
@@ -39,9 +39,8 @@ FunDecs : Type Sid LPAR Decs RPAR Stat FunDecs
 ;
 
 Type :	  INT		{ S100.Int $1 }
-
-     
-
+        | CHAR          { S100.Char $1 }
+    
 ;
 
 Decs :	  Decs1 Dec	{ $1 @ [$2] }
@@ -81,7 +80,7 @@ Stat :	  Exp SEMICOLON	{ S100.EX $1 }
 ;
 
 Exp :	  NUM		{ S100.NumConst $1 }
-        | CHAR          { S100.CharConst $1 } 
+        | CHARCONST     { S100.CharConst $1 } 
 	| Lval		{ S100.LV $1 }
 	| Lval ASSIGN Exp
 			{ S100.Assign ($1,$3,$2) }

@@ -18,14 +18,14 @@
  fun lexerError lexbuf s = 
      raise LexicalError (s, getPos lexbuf)
 
- fun keyword (s, pos) =
+fun keyword (s, pos) =
      case s of
          "if"           => Parser.IF pos
        | "then"         => Parser.THEN pos
        | "else"         => Parser.ELSE pos
        | "while"        => Parser.WHILE pos
-       | "int"          => Parser.INT pos
-       | "return"       => Parser.RETURN pos
+       | "int"          => (TextIO.output(TextIO.stdOut, "encountered int\n") ; Parser.INT pos)
+       | "return"       => (TextIO.output(TextIO.stdOut, "encountered return\n") ; Parser.RETURN pos)
        | _              => Parser.ID (s, pos)
 
  }
@@ -54,11 +54,11 @@ rule Token = parse
     `'`
                         { case Char.fromString (getLexeme lexbuf) of
                             NONE   => lexerError lexbuf "Not a char"
-                          | SOME c => Parser.CHAR (valOf (SOME c), getPos lexbuf) } 
+                          | SOME c => Parser.CHARCONST (valOf (SOME c), getPos lexbuf) } 
 
   (* The string expression below is set to '+', meaning that it's not possible to write "", i.e. a null string. It's fine to write " " however. Maybe it should be set to '*'? *)
   | [`"`][`a`-`z` `A`-`Z` `0`-`9` ` ` `!` `#` `$` `%` `&` `(` `)` `*` `,` `-` `.` `/` `:` `;` `<` `=` `>` `?` `@` `[` `]` `^` `_` ``` `{` `|` `}` `~`]+[`"`]
-                        { Parser.STRING (getLexeme lexbuf, getPos lexbuf) }
+                        { Parser.STRINGCONST (getLexeme lexbuf, getPos lexbuf) }
    
 
   (* This one is probably broken for now *)
