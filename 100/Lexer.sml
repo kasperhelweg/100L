@@ -27,6 +27,7 @@ fun keyword (s, pos) =
        | "else"         => Parser.ELSE pos
        | "while"        => Parser.WHILE pos
        | "int"          => (TextIO.output(TextIO.stdOut, "encountered int\n") ; Parser.INT pos)
+	      | "char"         => (TextIO.output(TextIO.stdOut, "encountered char\n") ; Parser.CHAR pos)
        | "return"       => (TextIO.output(TextIO.stdOut, "encountered return\n") ; Parser.RETURN pos)
        | _              => Parser.ID (s, pos)
 
