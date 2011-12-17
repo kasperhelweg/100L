@@ -13,16 +13,18 @@ type t__11__ = (int*int)
 type t__12__ = (int*int)
 type t__13__ = (int*int)
 type t__14__ = (int*int)
-type t__15__ = int*(int*int)
-type t__16__ = (int*int)
+type t__15__ = (int*int)
+type t__16__ = int*(int*int)
 type t__17__ = (int*int)
 type t__18__ = (int*int)
 type t__19__ = (int*int)
 type t__20__ = (int*int)
 type t__21__ = (int*int)
-type t__22__ = string*(int*int)
+type t__22__ = (int*int)
 type t__23__ = (int*int)
-type t__24__ = (int*int)
+type t__24__ = string*(int*int)
+type t__25__ = (int*int)
+type t__26__ = (int*int)
 in
 datatype token =
     ASSIGN of t__1__
@@ -31,24 +33,26 @@ datatype token =
   | COMMA of t__4__
   | ELSE of t__5__
   | EOF of t__6__
-  | EQUALS of t__7__
+  | EQUAL of t__7__
   | ID of t__8__
   | IF of t__9__
   | INT of t__10__
-  | LCURL of t__11__
-  | LESS of t__12__
-  | LPAR of t__13__
-  | MINUS of t__14__
-  | NUM of t__15__
-  | PLUS of t__16__
-  | POINTER of t__17__
-  | RCURL of t__18__
-  | RETURN of t__19__
-  | RPAR of t__20__
-  | SEMICOLON of t__21__
-  | STRINGCONST of t__22__
-  | THEN of t__23__
-  | WHILE of t__24__
+  | LBRAC of t__11__
+  | LCURL of t__12__
+  | LESS of t__13__
+  | LPAR of t__14__
+  | MINUS of t__15__
+  | NUM of t__16__
+  | PLUS of t__17__
+  | POINTER of t__18__
+  | RBRAC of t__19__
+  | RCURL of t__20__
+  | RETURN of t__21__
+  | RPAR of t__22__
+  | SEMICOLON of t__23__
+  | STRINGCONST of t__24__
+  | THEN of t__25__
+  | WHILE of t__26__
 end;
 
 val Prog :

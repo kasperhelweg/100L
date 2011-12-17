@@ -1,6 +1,8 @@
 {
  open Lexing;
 
+ val debug = false;
+
  exception LexicalError of string * (int * int) (* (message, (line, column)) *)
 
  val currentLine = ref 1
@@ -63,11 +65,12 @@ rule Token = parse
 
   (* The string expression below is set to '+', meaning that it's not possible to write "", i.e. a null string. It's fine to write " " however. Maybe it should be set to '*'? *)
   | [`"`][`a`-`z` `A`-`Z` `0`-`9` ` ` `!` `#` `$` `%` `&` `(` `)` `*` `,` `-` `.` `/` `:` `;` `<` `=` `>` `?` `@` `[` `]` `^` `_` ``` `{` `|` `}` `~`]+[`"`]
+                        (* Maybe strip the ""*)
                         { Parser.STRINGCONST (getLexeme lexbuf, getPos lexbuf) }
    
 
   (* This one is probably broken for now *)
-  | [`=`][`=`]          { Parser.EQUALS (getPos lexbuf) } 
+  | [`=`][`=`]          { (TextIO.output(TextIO.stdOut, "encountered EQ\n") ; Parser.EQUAL (getPos lexbuf))  } 
   | `*`                 { Parser.POINTER(getPos lexbuf) }
   | `+`                 { Parser.PLUS (getPos lexbuf) }
   | `-`                 { Parser.MINUS (getPos lexbuf) }
@@ -77,6 +80,8 @@ rule Token = parse
   | `)`                 { Parser.RPAR (getPos lexbuf) }
   | `{`                 { Parser.LCURL (getPos lexbuf)}
   | `}`                 { Parser.RCURL (getPos lexbuf)}
+  | `[`                 { Parser.LBRAC (getPos lexbuf)}
+  | `]`                 { Parser.RBRAC (getPos lexbuf)}
   | `,`                 { Parser.COMMA (getPos lexbuf) }
   | `;`                 { Parser.SEMICOLON (getPos lexbuf) }
   | eof                 { Parser.EOF (getPos lexbuf) }

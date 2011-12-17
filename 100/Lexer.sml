@@ -3,6 +3,8 @@ local open Obj Lexing in
 
  open Lexing;
 
+ val debug = false;
+
  exception LexicalError of string * (int * int) (* (message, (line, column)) *)
 
  val currentLine = ref 1
@@ -32,14 +34,18 @@ fun keyword (s, pos) =
        | _              => Parser.ID (s, pos)
 
  
-fun action_20 lexbuf = (
+fun action_22 lexbuf = (
  lexerError lexbuf "Illegal symbol in input" )
-and action_19 lexbuf = (
+and action_21 lexbuf = (
  Parser.EOF (getPos lexbuf) )
-and action_18 lexbuf = (
+and action_20 lexbuf = (
  Parser.SEMICOLON (getPos lexbuf) )
-and action_17 lexbuf = (
+and action_19 lexbuf = (
  Parser.COMMA (getPos lexbuf) )
+and action_18 lexbuf = (
+ Parser.RBRAC (getPos lexbuf))
+and action_17 lexbuf = (
+ Parser.LBRAC (getPos lexbuf))
 and action_16 lexbuf = (
  Parser.RCURL (getPos lexbuf))
 and action_15 lexbuf = (
@@ -59,7 +65,7 @@ and action_9 lexbuf = (
 and action_8 lexbuf = (
  Parser.POINTER(getPos lexbuf) )
 and action_7 lexbuf = (
- Parser.EQUALS (getPos lexbuf) )
+ (TextIO.output(TextIO.stdOut, "encountered EQ\n") ; Parser.EQUAL (getPos lexbuf))  )
 and action_6 lexbuf = (
  Parser.STRINGCONST (getLexeme lexbuf, getPos lexbuf) )
 and action_5 lexbuf = (
@@ -93,81 +99,83 @@ and state_0 lexbuf = (
  |  #"\f" => action_2 lexbuf
  |  #"}" => action_16 lexbuf
  |  #"{" => action_15 lexbuf
+ |  #"]" => action_18 lexbuf
+ |  #"[" => action_17 lexbuf
  |  #"=" => state_17 lexbuf
  |  #"<" => action_11 lexbuf
- |  #";" => action_18 lexbuf
+ |  #";" => action_20 lexbuf
  |  #"/" => state_13 lexbuf
  |  #"-" => action_10 lexbuf
- |  #"," => action_17 lexbuf
+ |  #"," => action_19 lexbuf
  |  #"+" => action_9 lexbuf
  |  #"*" => action_8 lexbuf
  |  #")" => action_14 lexbuf
  |  #"(" => action_13 lexbuf
  |  #"'" => state_6 lexbuf
  |  #"\"" => state_5 lexbuf
- |  #"\^@" => action_19 lexbuf
- |  _ => action_20 lexbuf
+ |  #"\^@" => action_21 lexbuf
+ |  _ => action_22 lexbuf
  end)
 and state_3 lexbuf = (
  setLexLastPos lexbuf (getLexCurrPos lexbuf);
  setLexLastAction lexbuf (magic action_0);
  let val currChar = getNextChar lexbuf in
  case currChar of
-    #"\t" => state_32 lexbuf
- |  #"\r" => state_32 lexbuf
- |  #" " => state_32 lexbuf
+    #"\t" => state_34 lexbuf
+ |  #"\r" => state_34 lexbuf
+ |  #" " => state_34 lexbuf
  |  _ => backtrack lexbuf
  end)
 and state_5 lexbuf = (
  setLexLastPos lexbuf (getLexCurrPos lexbuf);
- setLexLastAction lexbuf (magic action_20);
+ setLexLastAction lexbuf (magic action_22);
  let val currChar = getNextChar lexbuf in
- if currChar >= #"," andalso currChar <= #"[" then  state_30 lexbuf
- else if currChar >= #"]" andalso currChar <= #"~" then  state_30 lexbuf
+ if currChar >= #"," andalso currChar <= #"[" then  state_32 lexbuf
+ else if currChar >= #"]" andalso currChar <= #"~" then  state_32 lexbuf
  else case currChar of
-    #"!" => state_30 lexbuf
- |  #" " => state_30 lexbuf
- |  #"&" => state_30 lexbuf
- |  #"%" => state_30 lexbuf
- |  #"$" => state_30 lexbuf
- |  #"#" => state_30 lexbuf
- |  #"*" => state_30 lexbuf
- |  #")" => state_30 lexbuf
- |  #"(" => state_30 lexbuf
+    #"!" => state_32 lexbuf
+ |  #" " => state_32 lexbuf
+ |  #"&" => state_32 lexbuf
+ |  #"%" => state_32 lexbuf
+ |  #"$" => state_32 lexbuf
+ |  #"#" => state_32 lexbuf
+ |  #"*" => state_32 lexbuf
+ |  #")" => state_32 lexbuf
+ |  #"(" => state_32 lexbuf
  |  _ => backtrack lexbuf
  end)
 and state_6 lexbuf = (
  setLexLastPos lexbuf (getLexCurrPos lexbuf);
- setLexLastAction lexbuf (magic action_20);
+ setLexLastAction lexbuf (magic action_22);
  let val currChar = getNextChar lexbuf in
- if currChar >= #"," andalso currChar <= #"[" then  state_27 lexbuf
- else if currChar >= #"]" andalso currChar <= #"~" then  state_27 lexbuf
+ if currChar >= #"," andalso currChar <= #"[" then  state_29 lexbuf
+ else if currChar >= #"]" andalso currChar <= #"~" then  state_29 lexbuf
  else case currChar of
-    #"!" => state_27 lexbuf
- |  #" " => state_27 lexbuf
- |  #"&" => state_27 lexbuf
- |  #"%" => state_27 lexbuf
- |  #"$" => state_27 lexbuf
- |  #"#" => state_27 lexbuf
- |  #"*" => state_27 lexbuf
- |  #")" => state_27 lexbuf
- |  #"(" => state_27 lexbuf
- |  #"\\" => state_28 lexbuf
+    #"!" => state_29 lexbuf
+ |  #" " => state_29 lexbuf
+ |  #"&" => state_29 lexbuf
+ |  #"%" => state_29 lexbuf
+ |  #"$" => state_29 lexbuf
+ |  #"#" => state_29 lexbuf
+ |  #"*" => state_29 lexbuf
+ |  #")" => state_29 lexbuf
+ |  #"(" => state_29 lexbuf
+ |  #"\\" => state_30 lexbuf
  |  _ => backtrack lexbuf
  end)
 and state_13 lexbuf = (
  setLexLastPos lexbuf (getLexCurrPos lexbuf);
- setLexLastAction lexbuf (magic action_20);
+ setLexLastAction lexbuf (magic action_22);
  let val currChar = getNextChar lexbuf in
  case currChar of
-    #"*" => state_24 lexbuf
+    #"*" => state_26 lexbuf
  |  _ => backtrack lexbuf
  end)
 and state_14 lexbuf = (
  setLexLastPos lexbuf (getLexCurrPos lexbuf);
  setLexLastAction lexbuf (magic action_3);
  let val currChar = getNextChar lexbuf in
- if currChar >= #"0" andalso currChar <= #"9" then  state_23 lexbuf
+ if currChar >= #"0" andalso currChar <= #"9" then  state_25 lexbuf
  else backtrack lexbuf
  end)
 and state_17 lexbuf = (
@@ -182,82 +190,82 @@ and state_18 lexbuf = (
  setLexLastPos lexbuf (getLexCurrPos lexbuf);
  setLexLastAction lexbuf (magic action_4);
  let val currChar = getNextChar lexbuf in
- if currChar >= #"0" andalso currChar <= #"9" then  state_21 lexbuf
- else if currChar >= #"A" andalso currChar <= #"Z" then  state_21 lexbuf
- else if currChar >= #"a" andalso currChar <= #"z" then  state_21 lexbuf
+ if currChar >= #"0" andalso currChar <= #"9" then  state_23 lexbuf
+ else if currChar >= #"A" andalso currChar <= #"Z" then  state_23 lexbuf
+ else if currChar >= #"a" andalso currChar <= #"z" then  state_23 lexbuf
  else case currChar of
-    #"_" => state_21 lexbuf
- |  _ => backtrack lexbuf
- end)
-and state_21 lexbuf = (
- setLexLastPos lexbuf (getLexCurrPos lexbuf);
- setLexLastAction lexbuf (magic action_4);
- let val currChar = getNextChar lexbuf in
- if currChar >= #"0" andalso currChar <= #"9" then  state_21 lexbuf
- else if currChar >= #"A" andalso currChar <= #"Z" then  state_21 lexbuf
- else if currChar >= #"a" andalso currChar <= #"z" then  state_21 lexbuf
- else case currChar of
-    #"_" => state_21 lexbuf
+    #"_" => state_23 lexbuf
  |  _ => backtrack lexbuf
  end)
 and state_23 lexbuf = (
  setLexLastPos lexbuf (getLexCurrPos lexbuf);
- setLexLastAction lexbuf (magic action_3);
+ setLexLastAction lexbuf (magic action_4);
  let val currChar = getNextChar lexbuf in
  if currChar >= #"0" andalso currChar <= #"9" then  state_23 lexbuf
- else backtrack lexbuf
- end)
-and state_24 lexbuf = (
- let val currChar = getNextChar lexbuf in
- case currChar of
-    #"*" => state_25 lexbuf
- |  #"\^@" => backtrack lexbuf
- |  _ => state_24 lexbuf
+ else if currChar >= #"A" andalso currChar <= #"Z" then  state_23 lexbuf
+ else if currChar >= #"a" andalso currChar <= #"z" then  state_23 lexbuf
+ else case currChar of
+    #"_" => state_23 lexbuf
+ |  _ => backtrack lexbuf
  end)
 and state_25 lexbuf = (
+ setLexLastPos lexbuf (getLexCurrPos lexbuf);
+ setLexLastAction lexbuf (magic action_3);
+ let val currChar = getNextChar lexbuf in
+ if currChar >= #"0" andalso currChar <= #"9" then  state_25 lexbuf
+ else backtrack lexbuf
+ end)
+and state_26 lexbuf = (
+ let val currChar = getNextChar lexbuf in
+ case currChar of
+    #"*" => state_27 lexbuf
+ |  #"\^@" => backtrack lexbuf
+ |  _ => state_26 lexbuf
+ end)
+and state_27 lexbuf = (
  let val currChar = getNextChar lexbuf in
  case currChar of
     #"/" => action_1 lexbuf
  |  #"\^@" => backtrack lexbuf
- |  _ => state_24 lexbuf
+ |  _ => state_26 lexbuf
  end)
-and state_27 lexbuf = (
+and state_29 lexbuf = (
  let val currChar = getNextChar lexbuf in
  case currChar of
     #"'" => action_5 lexbuf
  |  _ => backtrack lexbuf
  end)
-and state_28 lexbuf = (
- let val currChar = getNextChar lexbuf in
- if currChar >= #" " andalso currChar <= #"*" then  state_27 lexbuf
- else if currChar >= #"," andalso currChar <= #"~" then  state_27 lexbuf
- else backtrack lexbuf
- end)
 and state_30 lexbuf = (
  let val currChar = getNextChar lexbuf in
- if currChar >= #"," andalso currChar <= #"[" then  state_30 lexbuf
- else if currChar >= #"]" andalso currChar <= #"~" then  state_30 lexbuf
+ if currChar >= #" " andalso currChar <= #"*" then  state_29 lexbuf
+ else if currChar >= #"," andalso currChar <= #"~" then  state_29 lexbuf
+ else backtrack lexbuf
+ end)
+and state_32 lexbuf = (
+ let val currChar = getNextChar lexbuf in
+ if currChar >= #"," andalso currChar <= #"[" then  state_32 lexbuf
+ else if currChar >= #"]" andalso currChar <= #"~" then  state_32 lexbuf
  else case currChar of
-    #"!" => state_30 lexbuf
- |  #" " => state_30 lexbuf
- |  #"&" => state_30 lexbuf
- |  #"%" => state_30 lexbuf
- |  #"$" => state_30 lexbuf
- |  #"#" => state_30 lexbuf
- |  #"*" => state_30 lexbuf
- |  #")" => state_30 lexbuf
- |  #"(" => state_30 lexbuf
+    #"!" => state_32 lexbuf
+ |  #" " => state_32 lexbuf
+ |  #"&" => state_32 lexbuf
+ |  #"%" => state_32 lexbuf
+ |  #"$" => state_32 lexbuf
+ |  #"#" => state_32 lexbuf
+ |  #"*" => state_32 lexbuf
+ |  #")" => state_32 lexbuf
+ |  #"(" => state_32 lexbuf
  |  #"\"" => action_6 lexbuf
  |  _ => backtrack lexbuf
  end)
-and state_32 lexbuf = (
+and state_34 lexbuf = (
  setLexLastPos lexbuf (getLexCurrPos lexbuf);
  setLexLastAction lexbuf (magic action_0);
  let val currChar = getNextChar lexbuf in
  case currChar of
-    #"\t" => state_32 lexbuf
- |  #"\r" => state_32 lexbuf
- |  #" " => state_32 lexbuf
+    #"\t" => state_34 lexbuf
+ |  #"\r" => state_34 lexbuf
+ |  #" " => state_34 lexbuf
  |  _ => backtrack lexbuf
  end)
 and Token lexbuf =
@@ -266,6 +274,6 @@ and Token lexbuf =
    state_0 lexbuf)
 
 (* The following checks type consistency of actions *)
-val _ = fn _ => [action_20, action_19, action_18, action_17, action_16, action_15, action_14, action_13, action_12, action_11, action_10, action_9, action_8, action_7, action_6, action_5, action_4, action_3, action_2, action_1, action_0];
+val _ = fn _ => [action_22, action_21, action_20, action_19, action_18, action_17, action_16, action_15, action_14, action_13, action_12, action_11, action_10, action_9, action_8, action_7, action_6, action_5, action_4, action_3, action_2, action_1, action_0];
 
 end
