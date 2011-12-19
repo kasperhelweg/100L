@@ -9,6 +9,8 @@ type pos = int*int
 datatype Type = Int
               | Char
               | Ref of Type
+ 
+
 
 type rl = Type list                
 
@@ -112,51 +114,63 @@ fun checkDecs [] = []
     extend (List.rev sids) (convertType t) (checkDecs ds)
 
 
-fun checkStat s vtable ftable t =
+fun checkStat s vtable ftable t (m::ms) =
     case s of
-      S100.EX e => (checkExp e vtable ftable; [])
+      S100.EX e => (checkExp e vtable ftable; (m::ms))
     | S100.If (e,s1,p) =>
       if checkExp e vtable ftable = Int
-      then checkStat s1 vtable ftable t
+      then checkStat s1 vtable ftable t (0::m::ms)
       else raise Error ("Condition should be integer", p)
    
     | S100.IfElse (e,s1,s2,p) =>
       if checkExp e vtable ftable = Int
-      then (checkStat s1 vtable ftable t;
-	    checkStat s2 vtable ftable t)
+      then
+        let
+          val mT = (0::m::ms)
+        in
+          checkStat s2 vtable ftable t (checkStat s1 vtable ftable t mT)
+       
+        end
       else raise Error ("Condition should be integer", p)
+    
     | S100.Return (e,p) => 
       let 
         val et = checkExp e vtable ftable
       in 
         if t et 
-        then (TextIO.output(TextIO.stdOut, "  Return type is ok at: " ^ getPos p ^ "\n"); [[1,2]])  
-        else raise Error ("Bad return type", p)
+        then (TextIO.output(TextIO.stdOut, "  Return type is ok at: " ^ getPos p ^ "\n"); ms)  
+        else raise Error ("Return type mismatch", p)
       end
     (* let val a = #1 (hd ftable) in (TextIO.output(TextIO.stdOut, a ^ "\n") ; ()) end *)
     | S100.Block (ds, ss, p) =>  (TextIO.output(TextIO.stdOut, "  Type checking Block at: \n") ; 
                                   let 
                                     val vtable' = (checkDecs ds) @ vtable 
-                                    (*val pv = printV vtable'*)
-                                    fun check [] = []
-                                      | check (s::ss) = (checkStat s vtable' ftable t)@check ss
-                                  in 
-                                    check ss
-                                    
-                                    
-                                    (*
-                                    (TextIO.output(TextIO.stdOut, "        Checking Decs in block\n") ; List.app (fn s => checkStat s vtable' ftable t) ss) 
-                                     *)
+                                    val mTable = (m::ms)
+                                    fun check [] m = m 
+                                      | check (s::ss) m = check ss ((checkStat s vtable' ftable t mTable))
+                                  in
+                                    check ss mTable
                                   end)
-   
+
+(* testing functions*)
+(*---------------------------------------------------------------------------------------------------------*)
+fun printC [] = "\n"
+  | printC (t::ts) = "  " ^ Int.toString(t) ^ (printC ts) 
+
+(*fun pr l = (TextIO.output(TextIO.stdOut, "  Returns: \n" ^ (printC l)))*)
+fun pr l = (TextIO.output(TextIO.stdOut, "  Returns: \n" ^ "  " ^ (printC l)))
+(*---------------------------------------------------------------------------------------------------------*)
+
+fun checkReturn [] _ = ()
+  | checkReturn _ sf = raise Error ("Function '" ^ (getName sf) ^  "' should always return a value" , (1, 0))
+
 fun checkFunDec (t,sf,decs,body,p) ftable =
-    (*(TextIO.output(TextIO.stdOut, "Checking Fun dec: " ^ getName(sf) ^ "\n") ; *)
-     (
-      (TextIO.output(TextIO.stdOut, "TTTT" ^ Int.toString(hd(hd(
-      checkStat body (checkDecs decs) ftable ((fn ft => fn rt => ft = rt ) (getType t sf))))) ^ "\n")) ; 
-      ()
-     )
-    (*)*)
+    let val rl = checkStat body (checkDecs decs) ftable ((fn ft => fn rt => ft = rt ) (getType t sf)) [0]
+    in
+      checkReturn rl sf
+      (*(pr (a) ; ())*)
+    end
+      
     
 fun getFuns [] ftable = ftable
   | getFuns ((t,sf,decs,_,p)::fs) ftable =

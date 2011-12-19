@@ -3,23 +3,20 @@ int main()
   int a;
   int b;
   
-  if (a == b)
-    return a;
-  
+  if (a == b){
+    if (a == b)
+      return 2;
+    else
+      a + b;
+    return 3;
+ 
+  }
+  else{
+    a + b;
 
-}
+  }  
 
-
-int hell()
-{
-  int a;
-  int b;
-  int c;
-  int d;
-  
-  d = (a + b) + c;
-  
-
+  return a;
 
 }
 
