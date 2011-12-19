@@ -3,6 +3,7 @@ sig
 
   datatype Type = Int
                 | Char
+                | Ref of Type
 
   exception Error of string*(int*int)
 

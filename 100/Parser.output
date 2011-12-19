@@ -711,10 +711,6 @@ state 60
 	.  error
 
 
-61: shift/reduce conflict (shift 42, reduce 31) on EQUAL
-61: shift/reduce conflict (shift 43, reduce 31) on LESS
-61: shift/reduce conflict (shift 44, reduce 31) on MINUS
-61: shift/reduce conflict (shift 45, reduce 31) on PLUS
 state 61
 	Exp : Exp . PLUS Exp  (28)
 	Exp : Exp . MINUS Exp  (29)
@@ -722,17 +718,16 @@ state 61
 	Exp : Exp . EQUAL Exp  (31)
 	Exp : Exp EQUAL Exp .  (31)
 
-	EQUAL  shift 42
-	LESS  shift 43
 	MINUS  shift 44
 	PLUS  shift 45
 	COMMA  reduce 31
+	EQUAL  reduce 31
+	LESS  reduce 31
 	RBRAC  reduce 31
 	RPAR  reduce 31
 	SEMICOLON  reduce 31
 
 
-62: shift/reduce conflict (shift 42, reduce 30) on EQUAL
 state 62
 	Exp : Exp . PLUS Exp  (28)
 	Exp : Exp . MINUS Exp  (29)
@@ -740,17 +735,16 @@ state 62
 	Exp : Exp LESS Exp .  (30)
 	Exp : Exp . EQUAL Exp  (31)
 
-	EQUAL  shift 42
 	MINUS  shift 44
 	PLUS  shift 45
 	COMMA  reduce 30
+	EQUAL  reduce 30
 	LESS  reduce 30
 	RBRAC  reduce 30
 	RPAR  reduce 30
 	SEMICOLON  reduce 30
 
 
-63: shift/reduce conflict (shift 42, reduce 29) on EQUAL
 state 63
 	Exp : Exp . PLUS Exp  (28)
 	Exp : Exp . MINUS Exp  (29)
@@ -758,8 +752,8 @@ state 63
 	Exp : Exp . LESS Exp  (30)
 	Exp : Exp . EQUAL Exp  (31)
 
-	EQUAL  shift 42
 	COMMA  reduce 29
+	EQUAL  reduce 29
 	LESS  reduce 29
 	MINUS  reduce 29
 	PLUS  reduce 29
@@ -768,7 +762,6 @@ state 63
 	SEMICOLON  reduce 29
 
 
-64: shift/reduce conflict (shift 42, reduce 28) on EQUAL
 state 64
 	Exp : Exp . PLUS Exp  (28)
 	Exp : Exp PLUS Exp .  (28)
@@ -776,8 +769,8 @@ state 64
 	Exp : Exp . LESS Exp  (30)
 	Exp : Exp . EQUAL Exp  (31)
 
-	EQUAL  shift 42
 	COMMA  reduce 28
+	EQUAL  reduce 28
 	LESS  reduce 28
 	MINUS  reduce 28
 	PLUS  reduce 28
@@ -786,7 +779,6 @@ state 64
 	SEMICOLON  reduce 28
 
 
-65: shift/reduce conflict (shift 42, reduce 27) on EQUAL
 state 65
 	Exp : Lval ASSIGN Exp .  (27)
 	Exp : Exp . PLUS Exp  (28)
@@ -945,13 +937,6 @@ state 78
 	Stat : IF LPAR Exp RPAR Stat ELSE Stat .  (19)
 
 	.  reduce 19
-
-
-State 61 contains 4 shift/reduce conflicts.
-State 62 contains 1 shift/reduce conflict.
-State 63 contains 1 shift/reduce conflict.
-State 64 contains 1 shift/reduce conflict.
-State 65 contains 1 shift/reduce conflict.
 
 
 29 terminals, 16 nonterminals

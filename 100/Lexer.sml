@@ -28,9 +28,9 @@ fun keyword (s, pos) =
        | "then"         => Parser.THEN pos
        | "else"         => Parser.ELSE pos
        | "while"        => Parser.WHILE pos
-       | "int"          => (TextIO.output(TextIO.stdOut, "encountered int\n") ; Parser.INT pos)
-       | "char"         => (TextIO.output(TextIO.stdOut, "encountered char\n") ; Parser.CHAR pos)
-       | "return"       => (TextIO.output(TextIO.stdOut, "encountered return\n") ; Parser.RETURN pos)
+       | "int"          => Parser.INT pos
+       | "char"         => Parser.CHAR pos
+       | "return"       => Parser.RETURN pos
        | _              => Parser.ID (s, pos)
 
  
@@ -65,7 +65,7 @@ and action_9 lexbuf = (
 and action_8 lexbuf = (
  Parser.POINTER(getPos lexbuf) )
 and action_7 lexbuf = (
- (TextIO.output(TextIO.stdOut, "encountered EQ\n") ; Parser.EQUAL (getPos lexbuf))  )
+ Parser.EQUAL (getPos lexbuf)  )
 and action_6 lexbuf = (
  Parser.STRINGCONST (getLexeme lexbuf, getPos lexbuf) )
 and action_5 lexbuf = (

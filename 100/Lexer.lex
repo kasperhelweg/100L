@@ -26,9 +26,9 @@ fun keyword (s, pos) =
        | "then"         => Parser.THEN pos
        | "else"         => Parser.ELSE pos
        | "while"        => Parser.WHILE pos
-       | "int"          => (TextIO.output(TextIO.stdOut, "encountered int\n") ; Parser.INT pos)
-       | "char"         => (TextIO.output(TextIO.stdOut, "encountered char\n") ; Parser.CHAR pos)
-       | "return"       => (TextIO.output(TextIO.stdOut, "encountered return\n") ; Parser.RETURN pos)
+       | "int"          => Parser.INT pos
+       | "char"         => Parser.CHAR pos
+       | "return"       => Parser.RETURN pos
        | _              => Parser.ID (s, pos)
 
  }
@@ -70,7 +70,7 @@ rule Token = parse
    
 
   (* This one is probably broken for now *)
-  | [`=`][`=`]          { (TextIO.output(TextIO.stdOut, "encountered EQ\n") ; Parser.EQUAL (getPos lexbuf))  } 
+  | [`=`][`=`]          { Parser.EQUAL (getPos lexbuf)  } 
   | `*`                 { Parser.POINTER(getPos lexbuf) }
   | `+`                 { Parser.PLUS (getPos lexbuf) }
   | `-`                 { Parser.MINUS (getPos lexbuf) }
