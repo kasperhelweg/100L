@@ -114,7 +114,7 @@ fun checkDecs [] = []
 
 fun checkStat s vtable ftable t =
     case s of
-      S100.EX e => (checkExp e vtable ftable; ())
+      S100.EX e => (checkExp e vtable ftable; [])
     | S100.If (e,s1,p) =>
       if checkExp e vtable ftable = Int
       then checkStat s1 vtable ftable t
@@ -130,7 +130,7 @@ fun checkStat s vtable ftable t =
         val et = checkExp e vtable ftable
       in 
         if t et 
-        then (TextIO.output(TextIO.stdOut, "  Return type is ok at: " ^ getPos p ^ "\n") ; ())  
+        then (TextIO.output(TextIO.stdOut, "  Return type is ok at: " ^ getPos p ^ "\n"); [[1,2]])  
         else raise Error ("Bad return type", p)
       end
     (* let val a = #1 (hd ftable) in (TextIO.output(TextIO.stdOut, a ^ "\n") ; ()) end *)
@@ -138,17 +138,25 @@ fun checkStat s vtable ftable t =
                                   let 
                                     val vtable' = (checkDecs ds) @ vtable 
                                     (*val pv = printV vtable'*)
+                                    fun check [] = []
+                                      | check (s::ss) = (checkStat s vtable' ftable t)@check ss
                                   in 
+                                    check ss
+                                    
+                                    
+                                    (*
                                     (TextIO.output(TextIO.stdOut, "        Checking Decs in block\n") ; List.app (fn s => checkStat s vtable' ftable t) ss) 
+                                     *)
                                   end)
-    
-    | _ => ()
-    
-
+   
 fun checkFunDec (t,sf,decs,body,p) ftable =
-    (TextIO.output(TextIO.stdOut, "Checking Fun dec: " ^ getName(sf) ^ "\n") ; 
-     checkStat body (checkDecs decs) ftable ((fn ft => fn rt => ft = rt ) (getType t sf))
-    )
+    (*(TextIO.output(TextIO.stdOut, "Checking Fun dec: " ^ getName(sf) ^ "\n") ; *)
+     (
+      (TextIO.output(TextIO.stdOut, "TTTT" ^ Int.toString(hd(hd(
+      checkStat body (checkDecs decs) ftable ((fn ft => fn rt => ft = rt ) (getType t sf))))) ^ "\n")) ; 
+      ()
+     )
+    (*)*)
     
 fun getFuns [] ftable = ftable
   | getFuns ((t,sf,decs,_,p)::fs) ftable =
