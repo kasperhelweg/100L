@@ -210,8 +210,16 @@ fun compileExp e vtable ftable place =
         val (ty2,code2) = compileExp e2 vtable ftable t2
       in
 	case (ty1,ty2) of
-	  
-          (Type.Int, Type.Int) =>
+	  (Type.Ref Type.Int, Type.Int) => 
+          (Type.Ref Type.Int, code1 @ code2 @ [Mips.SUB (place, t1,t2)])
+        | (Type.Ref Type.Char, Type.Int) =>
+          (Type.Ref Type.Char, code1 @ code2 @ [Mips.SUB (place, t1,t2)])
+        | (Type.Ref Type.Int, Type.Ref Type.Int) =>
+          (Type.Ref Type.Int, code1 @ code2 @ [Mips.SUB (place, t1,t2)])
+        | (Type.Ref Type.Char, Type.Ref Type.Char) =>
+          (Type.Ref Type.Char, code1 @ code2 @ [Mips.SUB (place, t1,t2)])
+        | (Type.Int, Type.Ref _) => raise Error ("Type error", pos)
+        | (_, _) =>
 	  (Type.Int,
 	   code1 @ code2 @ [Mips.SUB (place,t1,t2)])
       end
