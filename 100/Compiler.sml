@@ -76,15 +76,15 @@ fun compileExp e vtable ftable place =
 	      Mips.ORI (place, place, makeConst (n mod 65536))])
       | S100.CharConst (c, pos) =>
 	(Type.Char,[Mips.LI (place, Int.toString(ord(c)))])	 
-	| S100.StringConst (s, pos) =>
+      | S100.StringConst (s, pos) =>
 	let
 	    val CharList = String.explode(s)
-		 val t1 = "_stringConst1_"^newName()
+	    val t1 = "_stringConst1_"^newName()
 	    fun insertString [] t = []
 	      | insertString (c::cs) t = 
 		[Mips.ADDI(t1,"0",makeConst(ord(c))),
-		Mips.SW(t1,t,"0"), 
-			Mips.ADDI(t,t,makeConst(4))] 
+		 Mips.SB(t1,t,"0"), 
+		 Mips.ADDI(t,t,makeConst(1))] 
 		@ insertString cs t
 	in
 	    (Type.Ref (Type.Char), insertString CharList place)
@@ -97,9 +97,46 @@ fun compileExp e vtable ftable place =
 		(Type.Int, Reg x) =>
 		(Type.Int,
 		 code @ [Mips.MOVE (place,x)])
+	      | (Type.Char, Reg x) =>
+		(Type.Char,
+		 code @ [Mips.MOVE (place,x)])
+	      | (Type.Ref (Type.Int) , Mem(y,i)) =>
+		let
+		    val t1 = "_lookup1_"^newName()
+		    val t2 = "_lookup2_"^newName()
+		in
+		    (Type.Ref (Type.Int) , 
+		     code @ [Mips.LI(t1, y),
+			     Mips.ADD(t2,t1,i),
+			     Mips.ADD(t2,t2,i),
+			     Mips.ADD(t2,t2,i),
+			     Mips.ADD(t2,t2,i),
+			     Mips.LW(place,t2,"0")])
+		end
+	      | (Type.Ref (Type.Char), Mem(y,i)) =>
+		let
+		    val t1 = "_lookup1_"^newName()
+		    val t2 = "_lookup2_"^newName()
+		in
+		    (Type.Ref (Type.Char), 
+		     code @ [Mips.LI(t1, y),
+			     Mips.ADD(t2,t1,i),
+			    Mips.LW(place,t2,"0")])
+		end
+
 	end
+
+	(* GAMMEL LVAL
+	 let
+	    val (code,ty,loc) = compileLval lval vtable ftable
+	in
+	    case (ty,loc) of
+		(Type.Int, Reg x) =>
+		(Type.Int,
+		 code @ [Mips.MOVE (place,x)])
+	end*)
       | S100.Assign (lval,e,p) =>
-        let
+      let
             val t = "_assign_"^newName()
 	    val (code0,ty,loc) = compileLval lval vtable ftable
 	    val (_,code1) = compileExp e vtable ftable t
@@ -108,7 +145,46 @@ fun compileExp e vtable ftable place =
 		(Type.Int, Reg x) =>
 		(Type.Int,
 		 code0 @ code1 @ [Mips.MOVE (x,t), Mips.MOVE (place,t)])
-	end
+	      | (Type.Char, Reg x) =>
+		(Type.Char,
+		 code0 @ code1 @ [Mips.MOVE (x,t), Mips.MOVE (place,t)])
+	      | (Type.Ref (Type.Int), Mem(y,i)) =>
+		let
+		    val t1 = "_lookup1_"^newName()
+		    val t2 = "_lookup2_"^newName()
+		in
+		    (Type.Ref (Type.Int), 
+		     code0 @ code1 @ [Mips.LI(t1, y),
+				      Mips.ADD(t2,t1,i),
+				      Mips.ADD(t2,t2,i),
+				      Mips.ADD(t2,t2,i),
+				      Mips.ADD(t2,t2,i),
+				      Mips.SW(t,t2,"0")])
+		end
+	      | (Type.Ref (Type.Char), Mem(y,i)) =>
+		let
+		    val t1 = "_lookup1_"^newName()
+		    val t2 = "_lookup2_"^newName()
+		in
+		    (Type.Ref (Type.Char), 
+		     code0 @ code1 @ [Mips.LI(t1, y),
+				      Mips.ADD(t2,t1,i),
+				      Mips.SB(t,t2,"0")])
+		end
+	      | _ => raise Error ("Bad Expression",p)
+	end  
+
+      (* GAMMEL ASSIGN
+	let
+            val t = "_assign_"^newName()
+	    val (code0,ty,loc) = compileLval lval vtable ftable
+	    val (_,code1) = compileExp e vtable ftable t
+	in
+	    case (ty,loc) of
+		(Type.Int, Reg x) =>
+		(Type.Int,
+		 code0 @ code1 @ [Mips.MOVE (x,t), Mips.MOVE (place,t)])
+	end*)
       | S100.Plus (e1,e2,pos) =>
         let
 	    val t1 = "_plus1_"^newName()
@@ -214,9 +290,9 @@ fun compileStat s vtable ftable exitLabel =
 	S100.EX e => #2 (compileExp e vtable ftable "0")
       | S100.If (e,s1,p) =>
         let
-	  val t = "_if_"^newName()
-	  val l1 = "_endif_"^newName()
-	  val (_,code0) = compileExp e vtable ftable t
+	    val t = "_if_"^newName()
+	    val l1 = "_endif_"^newName()
+	    val (_,code0) = compileExp e vtable ftable t
 	  val code1 = compileStat s1 vtable ftable exitLabel
 	in
 	    code0 @ [Mips.BEQ (t,"0",l1)] @ code1 @ [Mips.LABEL l1]
