@@ -22,33 +22,33 @@ fun lookup x [] = NONE
 						      
 fun isIn x [] = false
   | isIn x (y::ys) = x=y orelse isIn x ys
-  
+				
 fun convertType (S100.Int _) = Type.Int
   | convertType (S100.Char _) = Type.Char
-  
-  
+				
+				
 
 fun extend [] _ vtable = vtable
   | extend (S100.Val (x,p)::sids) t vtable = let
 	val y = newName ()
-	in
-    (case lookup x vtable of
-	 NONE => extend sids t ((x,(t,y^x))::vtable)
-       | SOME _ => raise Error ("Double declaration of "^x,p))
-	end
+    in
+	(case lookup x vtable of
+	     NONE => extend sids t ((x,(t,y^x))::vtable)
+	   | SOME _ => raise Error ("Double declaration of "^x,p))
+    end
   | extend (S100.Ref (x,p)::sids) t vtable =
-  let
+    let
 	val y = newName ()
-	in
-    (case lookup x vtable of
-	 NONE => extend sids t ((x,(t,y^x))::vtable)
-       | SOME _ => raise Error ("Double declaration of "^x,p))
-	end
-  
+    in
+	(case lookup x vtable of
+	     NONE => extend sids t ((x,(t,y^x))::vtable)
+	   | SOME _ => raise Error ("Double declaration of "^x,p))
+    end
+    
 fun extendDecs [] = []
   | extendDecs ((t,sids)::ds) =
     extend (List.rev sids) (convertType t) (extendDecs ds)
-				
+    
 (* link register *)
 val RA = "31"
 (* Register for stack pointer *)
@@ -58,7 +58,7 @@ val HP = "28"
 (* Register for frame pointer *)
 val FP = "25"
 	 
-    
+	 
 
 
 
@@ -68,7 +68,7 @@ val maxReg = 24      (* highest allocatable register *)
 	     
 datatype Location = Reg of string (* value is in register *)
 		  | Mem of string * string
-                  (* Value is in memory. value * register where offset is*)
+(* Value is in memory. value * register where offset is*)
 			   
 (* compile expression *)
 fun compileExp e vtable ftable place =
@@ -83,28 +83,28 @@ fun compileExp e vtable ftable place =
       | S100.CharConst (c, pos) =>
 	(Type.Char,[Mips.LI (place, Int.toString(ord(c)))])	
 
- 
+	
       | S100.StringConst (s, pos) =>
 	let
-	  val CharList = String.explode(s)
-	  val l = length(CharList)
-	  val t1 = "_string_"^newName() 
-	  fun insertString [] t = []
-	    | insertString (c::cs) t = 
-	      [Mips.ADDI(t1,"0",makeConst(ord(c))),
-	       Mips.SB(t1,t,"0"), 
-	       Mips.ADDI(t,t,makeConst(1))] 
-	      @ (insertString cs t)
-              
+	    val CharList = String.explode(s)
+	    val l = length(CharList)
+	    val t1 = "_string_"^newName() 
+	    fun insertString [] t = []
+	      | insertString (c::cs) t = 
+		[Mips.ADDI(t1,"0",makeConst(ord(c))),
+		 Mips.SB(t1,t,"0"), 
+		 Mips.ADDI(t,t,makeConst(1))] 
+		@ (insertString cs t)
+		
 	in
-	  (Type.Ref (Type.Char), [Mips.LI("2", makeConst(l)),
-				  Mips.JAL("balloc", ["2"]),
-				  Mips.MOVE(place, "2")]
-				 @ (insertString CharList "2"))
+	    (Type.Ref (Type.Char), [Mips.LI("2", makeConst(l)),
+				    Mips.JAL("balloc", ["2"]),
+				    Mips.MOVE(place, "2")]
+				   @ (insertString CharList "2"))
 	end
         
         
-     | S100.LV lval =>
+      | S100.LV lval =>
         let
 	    val (code,ty,loc) = compileLval lval vtable ftable
 	in
@@ -136,22 +136,24 @@ fun compileExp e vtable ftable place =
 		    (Type.Ref (Type.Char), 
 		     code @ [Mips.LI(t1, y),
 			     Mips.ADD(t2,t1,i),
-			    Mips.LW(place,t2,"0")])
+			     Mips.LW(place,t2,"0")])
 		end
+	      | (_, _) =>
+		raise Error ("SOMETHING WENT WRONG!",(0,0))
 
 	end
 
-	(* GAMMEL LVAL
-	 let
-	    val (code,ty,loc) = compileLval lval vtable ftable
-	in
-	    case (ty,loc) of
-		(Type.Int, Reg x) =>
-		(Type.Int,
-		 code @ [Mips.MOVE (place,x)])
-	end*)
+      (* GAMMEL LVAL
+		let
+		    val (code,ty,loc) = compileLval lval vtable ftable
+		in
+		    case (ty,loc) of
+			(Type.Int, Reg x) =>
+			(Type.Int,
+			 code @ [Mips.MOVE (place,x)])
+		end*)
       | S100.Assign (lval,e,p) =>
-      let
+	let
             val t = "_assign_"^newName()
 	    val (code0,ty,loc) = compileLval lval vtable ftable
 	    val (_,code1) = compileExp e vtable ftable t
@@ -190,16 +192,16 @@ fun compileExp e vtable ftable place =
 	end  
 
       (* GAMMEL ASSIGN
-	let
-            val t = "_assign_"^newName()
-	    val (code0,ty,loc) = compileLval lval vtable ftable
-	    val (_,code1) = compileExp e vtable ftable t
-	in
-	    case (ty,loc) of
-		(Type.Int, Reg x) =>
-		(Type.Int,
-		 code0 @ code1 @ [Mips.MOVE (x,t), Mips.MOVE (place,t)])
-	end*)
+		let
+		    val t = "_assign_"^newName()
+		    val (code0,ty,loc) = compileLval lval vtable ftable
+		    val (_,code1) = compileExp e vtable ftable t
+		in
+		    case (ty,loc) of
+			(Type.Int, Reg x) =>
+			(Type.Int,
+			 code0 @ code1 @ [Mips.MOVE (x,t), Mips.MOVE (place,t)])
+		end*)
       | S100.Plus (e1,e2,pos) =>
         let
 	    val t1 = "_plus1_"^newName()
@@ -301,16 +303,18 @@ and compileLval lval vtable ftable =
 	   | NONE => raise Error ("Unknown variable "^x,p))
       | S100.Deref (s, pos) =>
 	(case lookup s vtable of
-	     SOME (ty,y) => ([], ty, Mem(y,"0"))
+	     SOME (Ref ty,y) => ([], ty, Mem(y,"0"))
+	   | SOME (ty, y) => raise Error ("Variable is not a reference "^s,pos))
 	   | NONE => raise Error ("Unknown variable "^s,pos))
       | S100.Lookup (s,e,pos) =>
 	let
 	    val t1 = "_Lval_"^newName()
             val (_,code1) = compileExp e vtable ftable t1
 	in
-	(case lookup s vtable of
-	     SOME (ty,y) => (code1, ty, Mem(y,t1))
-	   | NONE => raise Error ("Unknown variable "^s,pos))
+	    (case lookup s vtable of
+		 SOME (Ref ty,y) => (code1, ty, Mem(y,t1))
+	       | SOME (ty, y) => raise Error ("Variable is not a reference "^s,pos))
+	       | NONE => raise Error ("Unknown variable "^s,pos))
 	end
 	
 fun compileStat s vtable ftable exitLabel =
@@ -321,7 +325,7 @@ fun compileStat s vtable ftable exitLabel =
 	    val t = "_if_"^newName()
 	    val l1 = "_endif_"^newName()
 	    val (_,code0) = compileExp e vtable ftable t
-	  val code1 = compileStat s1 vtable ftable exitLabel
+	    val code1 = compileStat s1 vtable ftable exitLabel
 	in
 	    code0 @ [Mips.BEQ (t,"0",l1)] @ code1 @ [Mips.LABEL l1]
 	end
@@ -337,7 +341,7 @@ fun compileStat s vtable ftable exitLabel =
 	    code0 @ [Mips.BEQ (t,"0",l1)] @ code1
 	    @ [Mips.J l2, Mips.LABEL l1] @ code2 @ [Mips.LABEL l2]
 	end
-	| S100.While (e,s1,p) =>
+      | S100.While (e,s1,p) =>
         let
 	    val t = "_while_"^newName()
 	    val l1 = "_whilestart_"^newName()
@@ -354,10 +358,10 @@ fun compileStat s vtable ftable exitLabel =
 	in
 	    code0 @ [Mips.MOVE ("2",t), Mips.J exitLabel]
 	end
-	| S100.Block (ds,ss,p) =>
+      | S100.Block (ds,ss,p) =>
         let
-		val vtable2 = extendDecs ds
-		val code = compileStats ss (vtable2 @ vtable) ftable exitLabel
+	    val vtable2 = extendDecs ds
+	    val code = compileStats ss (vtable2 @ vtable) ftable exitLabel
 	in
 	    (code)
 	end
@@ -365,16 +369,16 @@ fun compileStat s vtable ftable exitLabel =
 and compileStats [] vtable ftable exitLabel = ([])
   | compileStats (s::ss) vtable ftable exitLabel =
     let
-    val code1 = compileStat s vtable ftable exitLabel
+	val code1 = compileStat s vtable ftable exitLabel
 	val code2 = compileStats ss vtable ftable exitLabel
     in
 	(code1 @ code2)
     end
-	
+    
 
-	
+    
 
-	
+    
 (* code for saving and restoring callee-saves registers *)
 fun stackSave currentReg maxReg savecode restorecode offset =
     if currentReg > maxReg
@@ -439,7 +443,7 @@ and compileFun ftable (typ, sf, args, body, (line,col)) =
         @ savecode  (* save callee-saves registers *)
         @ body1  (* code for function body *)
 	@ [Mips.LABEL (fname^"_exit")] (* exit label *)
-          @ restorecode  (* restore callee-saves registers *)
+        @ restorecode  (* restore callee-saves registers *)
         @ [Mips.LW (RA, SP, makeConst offset), (* restore return addr *)
            Mips.ADDI (SP,SP,makeConst (offset+4)), (* move SP up *)
            Mips.JR (RA, [])] (* return *)
@@ -449,12 +453,12 @@ and compileFun ftable (typ, sf, args, body, (line,col)) =
 fun compile funs =
     let
         val ftable =
-	  Type.getFuns funs [("getint",([],Type.Int)),
-			     ("putint",([Type.Int],Type.Int)),
-                             ("getstring",([Type.Int], Type.Ref Type.Char)),
-                             ("putstring",([Type.Ref Type.Char], Type.Ref Type.Char)),
-                             ("walloc", ([Type.Int], Type.Ref Type.Int)),
-                             ("balloc", ([Type.Int], Type.Ref Type.Char))]
+	    Type.getFuns funs [("getint",([],Type.Int)),
+			       ("putint",([Type.Int],Type.Int)),
+                               ("getstring",([Type.Int], Type.Ref Type.Char)),
+                               ("putstring",([Type.Ref Type.Char], Type.Ref Type.Char)),
+                               ("walloc", ([Type.Int], Type.Ref Type.Int)),
+                               ("balloc", ([Type.Int], Type.Ref Type.Char))]
 
 	val funsCode = List.concat (List.map (compileFun ftable) funs)
     in
