@@ -29,9 +29,18 @@ fun getPos (p1, p2) = "(" ^ (Int.toString p1) ^ ", " ^ (Int.toString p2) ^ ")"
 
 *)
 (*---------------------------------------------------------------------------------------------------------*)
+fun printV [] = (TextIO.output(TextIO.stdOut, "    *\n") ; ()) 
+  | printV ((s, t)::ds) = case t of
+                            Int => ((TextIO.output(TextIO.stdOut, "    vtable: " ^ s ^ " : of Int\n") ; ()) ; printV ds)
+                          | Char => ((TextIO.output(TextIO.stdOut,  "    vtable: " ^ s ^ " : of Char\n") ; ()) ; printV ds)
+                          | Ref Int => ((TextIO.output(TextIO.stdOut,  "    vtable: " ^ s ^ " : of Ref Int\n") ; ()) ; printV ds)
+                          | Ref Char => ((TextIO.output(TextIO.stdOut,  "    vtable: " ^ s ^ " : of Ref Char\n") ; ()) ; printV ds)
 
 fun convertType (S100.Int _) = Int
   | convertType (S100.Char _) = Char
+
+fun promoteType (Int) = Int
+  | promoteType (Char) = Int
 
 fun getName (S100.Val (f,p)) = f
   | getName (S100.Ref (f, p)) = f
@@ -54,12 +63,13 @@ fun checkExp e vtable ftable =
     | S100.Assign (lv,e1,p) =>
       let
 	val t1 = checkLval lv vtable ftable
-	val t2 = checkExp e1 vtable ftable
+	val t2 = promoteType (checkExp e1 vtable ftable)
       in 
         case (t1, t2) of
           (Int, Int) => Int
         | (Char, Int) => Int
         | (Int, Char) => Int
+        | (Char, Char) => Int
         | (Ref Char, Ref Char) => Ref Char
         | (Ref Int, Ref Int) => Ref Int
         | (_, _) => raise Error ("Type mismatch in assignment",p)
@@ -127,7 +137,7 @@ and checkLval lv vtable ftable =
        | NONE => raise Error ("Unknown variable: "^x,p))
        else raise Error ("Index not int", p)
 
-fun extend [] _ vtable =  vtable                    
+fun extend [] _ vtable =  (printV vtable ; vtable)                    
   | extend (S100.Val (x,p)::sids) t vtable =
     (case lookup x vtable of
        NONE => extend sids t ((x,t)::vtable)
