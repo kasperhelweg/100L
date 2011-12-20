@@ -3,8 +3,14 @@
 int main()
 {
   char *s; int i;
+  int a;    
+  char b;
+  b = 'a';
+  b = s[0];	
   i = getint();
   s = f();
+  
+  
   return putint(s[i]);
 }
 

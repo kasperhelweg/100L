@@ -8,8 +8,7 @@ struct
   datatype Type
     = Int of pos
     | Char of pos
-
-
+  
   datatype Sid
     = Val of string * pos
     | Ref of string * pos 

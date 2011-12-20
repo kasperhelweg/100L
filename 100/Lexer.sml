@@ -25,7 +25,6 @@ local open Obj Lexing in
 fun keyword (s, pos) =
      case s of
          "if"           => Parser.IF pos
-       | "then"         => Parser.THEN pos
        | "else"         => Parser.ELSE pos
        | "while"        => Parser.WHILE pos
        | "int"          => Parser.INT pos

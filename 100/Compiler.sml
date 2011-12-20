@@ -261,7 +261,11 @@ struct
     let
       val ftable =
 	  Type.getFuns funs [("getint",([],Type.Int)),
-			     ("putint",([Type.Int],Type.Int))]
+			     ("putint",([Type.Int],Type.Int)),
+                             ("getstring",([Type.Int], Type.Ref Type.Char)),
+                             ("putstring",([Type.Ref Type.Char], Type.Ref Type.Char)),
+                             ("walloc", ([Type.Int], Type.Ref Type.Char)),
+                             ("balloc", ([Type.Int], Type.Ref Type.Int))]
       val funsCode = List.concat (List.map (compileFun ftable) funs)
     in
       [Mips.TEXT "0x00400000",

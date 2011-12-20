@@ -1,6 +1,6 @@
 %token <string*(int*int)> ID
 %token <int*(int*int)> NUM
-%token <(int*int)> IF THEN ELSE INT CHAR RETURN WHILE
+%token <(int*int)> IF ELSE INT CHAR RETURN WHILE
 %token <(int*int)> PLUS MINUS LESS ASSIGN EQUAL POINTER
 %token <(int*int)> LPAR RPAR
 %token <(int*int)> LCURL RCURL
