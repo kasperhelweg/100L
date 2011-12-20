@@ -1,2 +1,18 @@
-int main() 
-    return 0;
+int main() {
+	int a;
+	int b;
+	int n, *i;
+
+	n = getint();
+	i = walloc(n);
+
+	a = 10;
+	if (a == 10) {
+	
+		b = 60;
+		a = 100;
+	} else {
+		a = 20;
+	}
+	return a+b;
+}
