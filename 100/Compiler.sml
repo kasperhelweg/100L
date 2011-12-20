@@ -26,7 +26,14 @@ fun isIn x [] = false
 fun convertType (S100.Int _) = Type.Int
   | convertType (S100.Char _) = Type.Char                                
 
-fun extend [] _ vtable = vtable
+fun printV [] = (TextIO.output(TextIO.stdOut, "    *\n") ; ()) 
+  | printV ((s,(t,y))::ds) = case t of
+                            Type.Int => ((TextIO.output(TextIO.stdOut, "    vtable: " ^ s ^ " : of Int. " ^ y ^ "\n" ) ; ()) ; printV ds)
+                          | Type.Char => ((TextIO.output(TextIO.stdOut,  "    vtable: " ^ s ^ " : of Char. " ^ y ^ "\n") ; ()) ; printV ds)
+                          | Type.Ref Type.Int => ((TextIO.output(TextIO.stdOut,  "    vtable: " ^ s ^ " : of Ref Int. " ^ y ^ "\n") ; ()) ; printV ds)
+                          | Type.Ref Type.Char => ((TextIO.output(TextIO.stdOut,  "    vtable: " ^ s ^ " : of Ref Char. " ^ y ^ "\n") ; ()) ; printV ds)
+
+fun extend [] _ vtable = (printV vtable; vtable)
   | extend (S100.Val (x,p)::sids) t vtable = let
       val y = newName ()
     in
@@ -39,10 +46,10 @@ fun extend [] _ vtable = vtable
       val y = newName ()
     in
       (case lookup x vtable of
-	 NONE => extend sids t ((x,(t,y^x))::vtable)
+	 NONE => extend sids t ((x,(Type.Ref t,y^x))::vtable)
        | SOME _ => raise Error ("Double declaration of "^x,p))
     end
-    
+
 fun extendDecs [] = []
   | extendDecs ((t,sids)::ds) =
     extend (List.rev sids) (convertType t) (extendDecs ds)
@@ -132,21 +139,12 @@ fun compileExp e vtable ftable place =
 		    (Type.Ref (Type.Char), 
 		     code @ [Mips.LI(t1, y),
 			     Mips.ADD(t2,t1,i),
-			     Mips.LW(place,t2,"0")])
+			     Mips.LB(place,t2,"0")])
 		end
 	      | (_, _) =>
-		raise Error ("SOMETHING WENT WRONG!",(0,0))
+		raise Error ("Type error. Consult your typechecker.",(0,0))
       end
 
-    (* GAMMEL LVAL
-	      let
-	        val (code,ty,loc) = compileLval lval vtable ftable
-	      in
-	        case (ty,loc) of
-		  (Type.Int, Reg x) =>
-		  (Type.Int,
-		   code @ [Mips.MOVE (place,x)])
-	      end*)
     | S100.Assign (lval,e,p) =>
       let
         val t = "_assign_"^newName()
@@ -186,17 +184,6 @@ fun compileExp e vtable ftable place =
 	| _ => raise Error ("Bad Expression",p)
       end  
 
-    (* GAMMEL ASSIGN
-	      let
-                val t = "_assign_"^newName()
-	        val (code0,ty,loc) = compileLval lval vtable ftable
-	        val (_,code1) = compileExp e vtable ftable t
-	      in
-	        case (ty,loc) of
-		  (Type.Int, Reg x) =>
-		  (Type.Int,
-		   code0 @ code1 @ [Mips.MOVE (x,t), Mips.MOVE (place,t)])
-	      end*)
     | S100.Plus (e1,e2,pos) =>
       let
 	val t1 = "_plus1_"^newName()
@@ -405,7 +392,7 @@ and compileFun ftable (typ, sf, args, body, (line,col)) =
       val fname = Type.getName sf
       val rty = Type.getType typ sf
       fun moveArgs [] r = ([], [], 0)
-	| moveArgs ((t,ss)::ds) r =
+	| moveArgs ((t,ss)::ds) r =                              (*HVAD FUCK SKER DER?!?!?!*)
 	  moveArgs1 ss (Type.convertType t) ds r
       and moveArgs1 [] t ds r = moveArgs ds r
 	| moveArgs1 (s::ss) t ds r =
@@ -458,10 +445,10 @@ fun compile funs =
       val ftable =
 	  Type.getFuns funs [("getint",([],Type.Int)),
 			     ("putint",([Type.Int],Type.Int)),
-                             ("getstring",([Type.Int], Type.Ref Type.Char)),
-                             ("putstring",([Type.Ref Type.Char], Type.Ref Type.Char)),
-                             ("walloc", ([Type.Int], Type.Ref Type.Int)),
-                             ("balloc", ([Type.Int], Type.Ref Type.Char))]
+                             ("getstring",([Type.Int], Type.Ref (Type.Char))),
+                             ("putstring",([Type.Ref Type.Char], Type.Ref (Type.Char))),
+                             ("walloc", ([Type.Int], Type.Ref (Type.Int))),
+                             ("balloc", ([Type.Int], Type.Ref (Type.Char)))]
 
       val funsCode = List.concat (List.map (compileFun ftable) funs)
     in
