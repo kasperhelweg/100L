@@ -9,21 +9,9 @@ main:
 	addi	$29, $29, -8
 	sw	$31, 4($29)
 	sw	$16, 0($29)
-# 	ori	_plus1__10_,_8_a,0
-# 	ori	_plus2__11_,_7_b,0
-	add	$3, $3, $4
-# was:	add	_assign__9_, _plus1__10_, _plus2__11_
-# 	ori	_8_a,_assign__9_,0
-# 	ori	0,_assign__9_,0
-# 	ori	_plus1__13_,_8_a,0
-# 	ori	_plus2__14_,_4_r,0
-	add	$2, $3, $2
-# was:	add	_assign__12_, _plus1__13_, _plus2__14_
-# 	ori	_4_r,_assign__12_,0
-# 	ori	0,_assign__12_,0
 	ori	$2, $0, 0
-# was:	ori	_return__15_, 0, 0
-# 	ori	2,_return__15_,0
+# was:	ori	_return__1_, 0, 0
+# 	ori	2,_return__1_,0
 	j	main_exit
 main_exit:
 	lw	$16, 0($29)

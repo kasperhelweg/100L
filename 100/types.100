@@ -2,6 +2,19 @@ int main()
 {
 
   int a;
+  int *b;
+
+  'a' = a;
+  
+  return 0;
+
+
+}
+
+
+char *hell(char a){
+
+  int a;
   int b;
 
   char c;
@@ -12,19 +25,23 @@ int main()
   
   char *t;
   char *d;
+
+  t = "kasper";
   
-  a = a + b;  /* int + int = int */
-
-  r = a + r;  /* int + int* = int*  */
-  r = r + a; /* int* + int = int* */
-
-  t = a + t;  /* int + char* = char* */
-  t = t + a; /* char* + int = char* */
-
-  /* TYPE ERROR r + i; */
  
-  a = a - b; /* int - int = int */
-  /* a - r; */   /* int - Ref TYPE ERROR */
+  
+  
+  a = a + b; 
+
+  r = a + r; 
+  r = r + a; 
+
+  t = a + t; 
+  t = t + a; 
+
+   
+  a = a - b; 
+ 
   r = r - a;
   t = t - a;
 
@@ -33,10 +50,12 @@ int main()
 
   c = 2;
 
+
+
   c = 'a';
 
-  return 0;
+ 
 
+  return t;
 }
-
 
