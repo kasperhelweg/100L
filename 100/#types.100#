@@ -1,0 +1,44 @@
+int main()
+{
+
+  int a;
+  int b;
+
+  char c;
+  char s;
+  
+  int *r;
+  int *i;
+  
+  char *t;
+  char *d;
+  
+  a = a + b;  /* int + int = int */
+
+  r = a + r;  /* int + int* = int*  */
+  r = r + a; /* int* + int = int* */
+
+  t = a + t;  /* int + char* = char* */
+  t = t + a; /* char* + int = char* */
+
+  /* TYPE ERROR r + i; */
+ 
+  a = a - b; /* int - int = int */
+  /* a - r; */   /* int - Ref TYPE ERROR */
+  r = r - a;
+  t = t - a;
+
+  a = r - i;
+  a = t - d;
+
+  c = 2;
+
+  
+
+  c = 'a';
+
+  return 0;
+
+}
+
+
