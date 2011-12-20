@@ -82,8 +82,6 @@ fun compileExp e vtable ftable place =
 	      Mips.ORI (place, place, makeConst (n mod 65536))])
       | S100.CharConst (c, pos) =>
 	(Type.Char,[Mips.LI (place, Int.toString(ord(c)))])	
-
- 
       | S100.StringConst (s, pos) =>
 	let
 	  val CharList = String.explode(s)
