@@ -63,6 +63,8 @@ val maxCaller = 15   (* highest caller-saves register *)
 val maxReg = 24      (* highest allocatable register *)
 	     
 datatype Location = Reg of string (* value is in register *)
+		  | Mem of string * string
+                  (* Value is in memory. value * register where offset is*)
 			   
 (* compile expression *)
 fun compileExp e vtable ftable place =
@@ -284,6 +286,19 @@ and compileLval lval vtable ftable =
         (case lookup x vtable of
 	     SOME (ty,y) => ([],ty,Reg y)
 	   | NONE => raise Error ("Unknown variable "^x,p))
+      | S100.Deref (s, pos) =>
+	(case lookup s vtable of
+	     SOME (ty,y) => ([], ty, Mem(y,"0"))
+	   | NONE => raise Error ("Unknown variable "^s,pos))
+      | S100.Lookup (s,e,pos) =>
+	let
+	    val t1 = "_Lval_"^newName()
+            val (_,code1) = compileExp e vtable ftable t1
+	in
+	(case lookup s vtable of
+	     SOME (ty,y) => (code1, ty, Mem(y,t1))
+	   | NONE => raise Error ("Unknown variable "^s,pos))
+	end
 	
 fun compileStat s vtable ftable exitLabel =
     case s of
