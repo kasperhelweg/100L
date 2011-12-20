@@ -306,8 +306,8 @@ and compileLval lval vtable ftable =
 	   | NONE => raise Error ("Unknown variable "^x,p))
       | S100.Deref (s, pos) =>
 	(case lookup s vtable of
-	     SOME (Ref ty,y) => ([], ty, Mem(y,"0"))
-	   | SOME (ty, y) => raise Error ("Variable is not a reference "^s,pos))
+	     SOME (Type.Ref ty,y) => ([], ty, Mem(y,"0"))
+	   | SOME (ty, y) => raise Error ("Variable is not a reference "^s,pos)
 	   | NONE => raise Error ("Unknown variable "^s,pos))
       | S100.Lookup (s,e,pos) =>
 	let
@@ -315,8 +315,8 @@ and compileLval lval vtable ftable =
             val (_,code1) = compileExp e vtable ftable t1
 	in
 	    (case lookup s vtable of
-		 SOME (Ref ty,y) => (code1, ty, Mem(y,t1))
-	       | SOME (ty, y) => raise Error ("Variable is not a reference "^s,pos))
+		 SOME (Type.Ref ty,y) => (code1, ty, Mem(y,t1))
+	       | SOME (ty, y) => raise Error ("Variable is not a reference "^s,pos)
 	       | NONE => raise Error ("Unknown variable "^s,pos))
 	end
 	
