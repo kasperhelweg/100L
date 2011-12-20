@@ -10,9 +10,8 @@ main:
 	sw	$31, 8($29)
 	sw	$17, 4($29)
 	sw	$16, 0($29)
-	jal	getint
-# was:	jal	getint, 
-# 	ori	_assign__5_,2,0
+	ori	$2, $0, 2
+# was:	ori	_assign__5_, 0, 2
 # 	ori	_2_n,_assign__5_,0
 # 	ori	0,_assign__5_,0
 # 	ori	_exps__7_,_2_n,0
