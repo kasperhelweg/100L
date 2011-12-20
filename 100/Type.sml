@@ -36,8 +36,6 @@ fun printV [] = (TextIO.output(TextIO.stdOut, "    *\n") ; ())
                           | Ref Int => ((TextIO.output(TextIO.stdOut,  "    vtable: " ^ s ^ " : of Ref Int\n") ; ()) ; printV ds)
                           | Ref Char => ((TextIO.output(TextIO.stdOut,  "    vtable: " ^ s ^ " : of Ref Char\n") ; ()) ; printV ds)
 
-fun getPos (p1, p2) = " line " ^ (Int.toString p1) ^ ", column " ^ (Int.toString p2) ^ "\n"
-
 fun convertType (S100.Int _) = Int
   | convertType (S100.Char _) = Char
 
@@ -50,6 +48,8 @@ fun getName (S100.Val (f,p)) = f
 
 fun getType t (S100.Val (f,p)) = convertType t
   | getType t (S100.Ref (f, p)) = Ref (convertType t)
+
+fun getPos (p1, p2) = " line " ^ (Int.toString p1) ^ ", column " ^ (Int.toString p2) ^ "\n"
 
 (* lookup function for symbol table as list of (name,value) pairs *)
 fun lookup x []
@@ -71,8 +71,6 @@ fun checkExp e vtable ftable =
         case (t1, t2) of
           (Int, Int) => Int
         | (Char, Int) => Int 
-      (*  | (Int, Char) => Int *)
-      (*  | (Char, Char) => Int *)
         | (Ref Char, Ref Char) => Ref Char
         | (Ref Int, Ref Int) => Ref Int
         | (_, _) => raise Error ("Type mismatch in assignment",p)
@@ -82,9 +80,6 @@ fun checkExp e vtable ftable =
       (case (promoteType(checkExp e1 vtable ftable),
 	     promoteType(checkExp e2 vtable ftable)) of
 	 (Int, Int) => Int
-    (*   | (Char, Int) => Int *)
-    (*   | (Int, Char) => Int *)
-    (*   | (Char, Char) => Int *)
        | (Int, Ref Char) => Ref Char
        | (Ref Char, Int) => Ref Char
        | (Int, Ref Int) =>  Ref Int
@@ -106,7 +101,7 @@ fun checkExp e vtable ftable =
       if checkExp e1 vtable ftable = checkExp e2 vtable ftable
       then Int else raise Error ("Can't compare different types",p)
     | S100.Equal (e1, e2, p) => 
-       if checkExp e1 vtable ftable = checkExp e2 vtable ftable
+       if checkExp e1 vtable ftable = promoteType (checkExp e2 vtable ftable)
       then Int else raise Error ("Can't compare different types",p)
     | S100.Call (f,es,p) =>
       (case lookup f ftable of
