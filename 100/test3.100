@@ -1,27 +1,20 @@
 int main()
 {
-
-  int a;
-  int b;
-  
-  char e;
-
+  /*
+    En Lval kan have typerne char, int, char* og int *
+    En Exp kan have typerne int, char* og int*, men ikke char.
+    Når en Lval bruges som en Exp (produktionen Exp -> Lval) konverteres char til int
+    Når en værdi lægges i en Lval (produktionen Exp -> Lval = Exp) og denne Lval har type char, skal udtrykket have typen int.  Kun de sidste 8 bit af værdien af udtrykket gemmes i Lval.
+    Når en funktion med et argument af typen char kaldes, overføres kun 8 bit.  Da en parameter altid fylder 32 bit, kan gøres dette ved f.eks. at nulstille de resterende 24 bit.
+    Når en funktion med resultattype char returnerer overføres kun 8 bit.  Det sker som ved parameteroverførsel.
+  */
+  int n, a, b;
   int *c;
-  int *v;
+
+  c[2] = 'a';
   
-  char *d;
-  char *x;
-
-  int result;
-
-  e = 'a';
-
-  
-  
-
-  c[1] = 'a';
-  c* = 2;
-
+ n = getint();	
+ 
  if (a == b){
     if (a == b) {
       return 0;
@@ -34,16 +27,19 @@ int main()
   } else { 
     return a + b;
   }
-
+ 
+ 
  return 0;
   
-  /*
-  char c;
-  char *d;
-  
   a = 2;
-  return 0;
-  */
+  if (a==a){
+    a + a;
+  }
+  else{
+  }
+    
+  
+  
 }
 
 int hell(){

@@ -264,8 +264,8 @@ struct
 			     ("putint",([Type.Int],Type.Int)),
                              ("getstring",([Type.Int], Type.Ref Type.Char)),
                              ("putstring",([Type.Ref Type.Char], Type.Ref Type.Char)),
-                             ("walloc", ([Type.Int], Type.Ref Type.Char)),
-                             ("balloc", ([Type.Int], Type.Ref Type.Int))]
+                             ("walloc", ([Type.Int], Type.Ref Type.Int)),
+                             ("balloc", ([Type.Int], Type.Ref Type.Char))]
       val funsCode = List.concat (List.map (compileFun ftable) funs)
     in
       [Mips.TEXT "0x00400000",
