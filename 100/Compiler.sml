@@ -415,7 +415,7 @@ and compileFun ftable (typ, sf, args, body, (line,col)) =
       val fname = Type.getName sf
       val rty = Type.getType typ sf
       fun moveArgs [] r = ([], [], 0)
-	| moveArgs ((t,ss)::ds) r =                              (*HVAD FUCK SKER DER?!?!?!*)
+	| moveArgs ((t,ss)::ds) r =                            
 	  moveArgs1 ss (Type.convertType t) ds r
       and moveArgs1 [] t ds r = moveArgs ds r
 	| moveArgs1 (s::ss) t ds r =
@@ -423,7 +423,7 @@ and compileFun ftable (typ, sf, args, body, (line,col)) =
 	    val y = newName ()
 	    val (x,ty,loc) = (case s of
 			        S100.Val (x,p) => (x, t, x^y)
-                              (*_kasper was here*)
+                              (*_kasper was here*) (*Sejt nok*)
                               | S100.Ref (x,p) => (x, Type.Ref t, x^y)) 
 	    val rname = Int.toString r
 	    val (code, vtable, stackSpace) = moveArgs1 ss t ds (r+1)
