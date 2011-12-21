@@ -25,15 +25,15 @@ fun isIn x [] = false
                                 
 fun convertType (S100.Int _) = Type.Int
   | convertType (S100.Char _) = Type.Char                                
-
+(*
 fun printV [] = (TextIO.output(TextIO.stdOut, "    *\n") ; ()) 
   | printV ((s,(t,y))::ds) = case t of
                             Type.Int => ((TextIO.output(TextIO.stdOut, "    vtable: " ^ s ^ " : of Int. " ^ y ^ "\n" ) ; ()) ; printV ds)
                           | Type.Char => ((TextIO.output(TextIO.stdOut,  "    vtable: " ^ s ^ " : of Char. " ^ y ^ "\n") ; ()) ; printV ds)
                           | Type.Ref Type.Int => ((TextIO.output(TextIO.stdOut,  "    vtable: " ^ s ^ " : of Ref Int. " ^ y ^ "\n") ; ()) ; printV ds)
                           | Type.Ref Type.Char => ((TextIO.output(TextIO.stdOut,  "    vtable: " ^ s ^ " : of Ref Char. " ^ y ^ "\n") ; ()) ; printV ds)
-
-fun extend [] _ vtable = (printV vtable; vtable)
+*)
+fun extend [] _ vtable =  vtable
   | extend (S100.Val (x,p)::sids) t vtable = let
       val y = newName ()
     in
@@ -108,6 +108,7 @@ fun compileExp e vtable ftable place =
         
         
       | S100.LV lval =>
+ 
         let
 	    val (code,ty,loc) = compileLval lval vtable ftable
 	in
@@ -118,7 +119,7 @@ fun compileExp e vtable ftable place =
 	      | (Type.Char, Reg x) =>
 		(Type.Char,
 		 code @ [Mips.MOVE (place,x)])
-	      | (Type.Ref (Type.Int) , Mem(y,i)) =>
+              | (Type.Ref (Type.Int) , Mem(y,i)) =>
 		let
 		    val t1 = "_lookup1_"^newName()
 		    val t2 = "_lookup2_"^newName()
@@ -145,14 +146,17 @@ fun compileExp e vtable ftable place =
 		raise Error ("Type error. Consult your typechecker.",(0,0))
       end
 
-    | S100.Assign (lval,e,p) =>
+    | S100.Assign (lval,e,p) => 
       let
         val t = "_assign_"^newName()
 	val (code0,ty,loc) = compileLval lval vtable ftable
 	val (_,code1) = compileExp e vtable ftable t
       in
+     
 	case (ty,loc) of
-	  (Type.Int, Reg x) =>
+          
+	  (Type.Int, Reg x) => 
+         
 	  (Type.Int,
 	   code0 @ code1 @ [Mips.MOVE (x,t), Mips.MOVE (place,t)])
 	| (Type.Char, Reg x) =>
@@ -171,7 +175,7 @@ fun compileExp e vtable ftable place =
 			      Mips.ADD(t2,t2,i),
 			      Mips.SW(t,t2,"0")])
 	  end
-	| (Type.Ref (Type.Char), Mem(y,i)) =>
+	| (Type.Ref (Type.Char), Mem(y,i)) => (*HERE IT IS*)
 	  let
 	    val t1 = "_lookup1_"^newName()
 	    val t2 = "_lookup2_"^newName()
@@ -182,7 +186,7 @@ fun compileExp e vtable ftable place =
 			      Mips.SB(t,t2,"0")])
 	  end
 	| _ => raise Error ("Bad Expression",p)
-      end  
+      end 
 
     | S100.Plus (e1,e2,pos) =>
       let
@@ -249,7 +253,10 @@ fun compileExp e vtable ftable place =
     | S100.Call (f,es,pos) =>
       let
 	val rTy = case lookup f ftable of
-		    SOME (_,t) => t
+                    (*_kasper_ was here*)
+                    SOME (_, Type.Ref t) => Type.Ref t
+		  | SOME (_,t) => t
+                 
 		  | NONE => raise Error ("unknown function "^f,pos)
 	val (code1,args) = compileExps es vtable ftable
 	fun moveArgs [] r = ([],[],0)
@@ -297,11 +304,14 @@ and compileLval lval vtable ftable =
     case lval of
 	S100.Var (x,p) =>
         (case lookup x vtable of
-	     SOME (ty,y) => ([],ty,Reg y)
-	   | NONE => raise Error ("Unknown variable "^x,p))
+           (*_kasper_ was here - no idea what this means*)
+           SOME (Type.Ref ty,y) => ([], Type.Ref ty, Mem(y,"0"))
+	 | SOME (ty,y) => ([],ty,Reg y)
+	 | NONE => raise Error ("Unknown variable "^x,p))
       | S100.Deref (s, pos) =>
 	(case lookup s vtable of
-	     SOME (Type.Ref ty,y) => ([], ty, Mem(y,"0"))
+            (*_kasper_ changed this to be Type.Ref ty *)
+	     SOME (Type.Ref ty,y) => ([], Type.Ref ty, Mem(y,"0"))
 	   | SOME (ty, y) => raise Error ("Variable is not a reference "^s,pos)
 	   | NONE => raise Error ("Unknown variable "^s,pos))
       | S100.Lookup (s,e,pos) =>
@@ -310,7 +320,8 @@ and compileLval lval vtable ftable =
             val (_,code1) = compileExp e vtable ftable t1
 	in
 	    (case lookup s vtable of
-		 SOME (Type.Ref ty,y) => (code1, ty, Mem(y,t1))
+               (*_kasper_ Changed this to be Type.Ref ty *)
+		 SOME (Type.Ref ty,y) => (code1, Type.Ref ty, Mem(y,t1))
 	       | SOME (ty, y) => raise Error ("Variable is not a reference "^s,pos)
 	       | NONE => raise Error ("Unknown variable "^s,pos))
 	end
@@ -363,6 +374,7 @@ fun compileStat s vtable ftable exitLabel =
 	in
 	    (code)
 	end
+      
 	
 and compileStats [] vtable ftable exitLabel = ([])
   | compileStats (s::ss) vtable ftable exitLabel =
@@ -407,7 +419,9 @@ and compileFun ftable (typ, sf, args, body, (line,col)) =
 	  let
 	    val y = newName ()
 	    val (x,ty,loc) = (case s of
-			        S100.Val (x,p) => (x, t, x^y))
+			        S100.Val (x,p) => (x, t, x^y)
+                              (*_kasper was here*)
+                              | S100.Ref (x,p) => (x, Type.Ref t, x^y)) 
 	    val rname = Int.toString r
 	    val (code, vtable, stackSpace) = moveArgs1 ss t ds (r+1)
 	  in
