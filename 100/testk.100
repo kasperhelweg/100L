@@ -2,8 +2,8 @@ int main(){
 
     char *s;
     char *k;    
-    s = "kasssss\0";
-    putstring(s);
+    s = "kasper";
+    putstring("Nielsss");
     return 0;
 
 }

@@ -92,15 +92,17 @@ fun compileExp e vtable ftable place =
 	    val CharList = String.explode(s)
 	    val l = length(CharList)
 	    val t1 = "_string_"^newName() 
-	    fun insertString [] t = []
+	    fun insertString [] t = 
+		[Mips.ADDI(t1,"0", makeConst(0)),
+		 Mips.SB(t1,t,"0")]
 	      | insertString (c::cs) t = 
-		[Mips.ADDI(t1,"0",makeConst(ord(c))),
+		[Mips.ADDI(t1,"0", makeConst(ord(c))),
 		 Mips.SB(t1,t,"0"), 
-		 Mips.ADDI(t,t,makeConst(l))] 
+		 Mips.ADDI(t,t,"1")] 
 		@ (insertString cs t)
 		
 	in
-	    (Type.Char, [Mips.LI("2", makeConst(l)),
+	    (Type.Ref Type.Char, [Mips.LI("2", makeConst(l+1)),
 				    Mips.JAL("balloc", ["2"]),
 				    Mips.MOVE(place, "2")]
 				   @ (insertString CharList "2"))
@@ -181,9 +183,9 @@ fun compileExp e vtable ftable place =
 	    val t2 = "_lookup2_"^newName()
 	  in
 	    (Type.Ref (Type.Char), 
-	     code0 @ code1 @ [Mips.LI(t1, y),
-			      Mips.ADD(t2,t1,i),
-			      Mips.SB(t,t2,"0")])
+	     code0 @ code1 @ [Mips.LI(t1, "2"),
+			      Mips.ADD(t2, t1, i),
+			      Mips.SB(t, t2, "0")])
 	  end
 	| _ => raise Error ("Bad Expression",p)
       end 
@@ -307,7 +309,7 @@ and compileLval lval vtable ftable =
            (*_kasper_ was here - no idea what this means*)
            SOME (Type.Ref ty,y) => ([], Type.Ref ty, Mem(y,"0"))
          
-	 | SOME (ty,y) => ([], ty,Reg y)
+	 |  SOME (ty,y) => ([], ty,Reg y)
 	 | NONE => raise Error ("Unknown variable "^x,p))
       | S100.Deref (s, pos) =>
 	(case lookup s vtable of
