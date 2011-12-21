@@ -92,7 +92,7 @@ fun compileExp e vtable ftable place =
 	    val CharList = String.explode(s)
 	    val l = length(CharList)
 	    val t1 = "_string_"^newName() 
-	    fun insertString [] t = []
+	    fun insertString [] t = ['\0']
 	      | insertString (c::cs) t = 
 		[Mips.ADDI(t1,"0",makeConst(ord(c))),
 		 Mips.SB(t1,t,"0"), 
@@ -100,7 +100,7 @@ fun compileExp e vtable ftable place =
 		@ (insertString cs t)
 		
 	in
-	    (Type.Ref (Type.Char), [Mips.LI("2", makeConst(l)),
+	    (Type.Ref (Type.Char), [Mips.LI("2", makeConst(l+1)),
 				    Mips.JAL("balloc", ["2"]),
 				    Mips.MOVE(place, "2")]
 				   @ (insertString CharList "2"))
