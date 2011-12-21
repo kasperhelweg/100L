@@ -96,11 +96,11 @@ fun compileExp e vtable ftable place =
 	      | insertString (c::cs) t = 
 		[Mips.ADDI(t1,"0",makeConst(ord(c))),
 		 Mips.SB(t1,t,"0"), 
-		 Mips.ADDI(t,t,makeConst(1))] 
+		 Mips.ADDI(t,t,makeConst(l))] 
 		@ (insertString cs t)
 		
 	in
-	    (Type.Ref (Type.Char), [Mips.LI("2", makeConst(l)),
+	    (Type.Char, [Mips.LI("2", makeConst(l)),
 				    Mips.JAL("balloc", ["2"]),
 				    Mips.MOVE(place, "2")]
 				   @ (insertString CharList "2"))
@@ -306,7 +306,8 @@ and compileLval lval vtable ftable =
         (case lookup x vtable of
            (*_kasper_ was here - no idea what this means*)
            SOME (Type.Ref ty,y) => ([], Type.Ref ty, Mem(y,"0"))
-	 | SOME (ty,y) => ([],ty,Reg y)
+         
+	 | SOME (ty,y) => ([], ty,Reg y)
 	 | NONE => raise Error ("Unknown variable "^x,p))
       | S100.Deref (s, pos) =>
 	(case lookup s vtable of
