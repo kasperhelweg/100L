@@ -122,28 +122,9 @@ fun compileExp e vtable ftable place =
 		(Type.Char,
 		 code @ [Mips.MOVE (place,x)])
               | (Type.Ref (Type.Int) , Mem(y,i)) =>
-		let
-		    val t1 = "_lookup1_"^newName()
-		    val t2 = "_lookup2_"^newName()
-		in
-		    (Type.Ref (Type.Int) , 
-		     code @ [Mips.LI(t1, y),
-			     Mips.ADD(t2,t1,i),
-			     Mips.ADD(t2,t2,i),
-			     Mips.ADD(t2,t2,i),
-			     Mips.ADD(t2,t2,i),
-			     Mips.LW(place,t2,"0")])
-		end
+		(Type.Ref (Type.Int), code @ [Mips.LW(place,y,"0")])
 	      | (Type.Ref (Type.Char), Mem(y,i)) =>
-		let
-		    val t1 = "_lookup1_"^newName()
-		    val t2 = "_lookup2_"^newName()
-		in
-		    (Type.Ref (Type.Char), 
-		     code @ [Mips.LI(t1, y),
-			     Mips.ADD(t2,t1,i),
-			     Mips.LB(place,t2,"0")])
-		end
+		(Type.Ref (Type.Char), code @ [Mips.LB(place,y,"0")])
 	      | (_, _) =>
 		raise Error ("Type error. Consult your typechecker.",(0,0))
       end
@@ -155,8 +136,7 @@ fun compileExp e vtable ftable place =
 	val (_,code1) = compileExp e vtable ftable t
       in
      
-	case (ty,loc) of
-          
+	case (ty,loc) of    
 	  (Type.Int, Reg x) => 
 	  (Type.Int,
 	   code0 @ code1 @ [Mips.MOVE (x,t), Mips.MOVE (place,t)])
@@ -164,31 +144,14 @@ fun compileExp e vtable ftable place =
 	  (Type.Char,
 	   code0 @ code1 @ [Mips.MOVE (x,t), Mips.MOVE (place,t)])
 	| (Type.Ref (Type.Int), Mem(y,i)) =>
-	  let
-	    val t1 = "_lookup1_"^newName()
-	    val t2 = "_lookup2_"^newName()
-	  in
-	    (Type.Ref (Type.Int), 
-	     code0 @ code1 @ [Mips.LI(t1, y),
-			      Mips.ADD(t2,t1,i),
-			      Mips.ADD(t2,t2,i),
-			      Mips.ADD(t2,t2,i),
-			      Mips.ADD(t2,t2,i),
-			      Mips.SW(t,t2,"0")])
-	  end
+	  (Type.Ref (Type.Int), code0 @ code1 @ 
+				[Mips.MOVE(place,y), Mips.SW(t,y,"0")])
 	| (Type.Ref (Type.Char), Mem(y,i)) => 
-	  let
-	    val t1 = "_lookup1_"^newName()
-	    val t2 = "_lookup2_"^newName()
-	  in
-	    (Type.Ref (Type.Char), 
-	     code0 @ code1 @ [Mips.LI(t1, y),
-			      Mips.ADD(t2,t1,i),
-			      Mips.SB(t,t2,"0")])
-	  end
+	  (Type.Ref (Type.Char), code0 @ code1 @ 
+				 [Mips.MOVE(place,y), Mips.SB(t,y,"0")])
 	| _ => raise Error ("Bad Expression",p)
       end 
-
+      
     | S100.Plus (e1,e2,pos) =>
       let
 	val t1 = "_plus1_"^newName()
@@ -326,14 +289,14 @@ and compileLval lval vtable ftable =
 		     val code2 = [Mips.SLL(t2,t1,"2"),
 				  Mips.ADD(t2,t2,y)]
 		 in
-		     (code1 @ code2, Type.Ref Type.Int, Mem(y,t1))
+		     (code1 @ code2, Type.Ref Type.Int, Mem(y,"0"))
 		 end
 	       | SOME (Type.Ref Type.Char , y) => 
 		let
 		    val t2 = "_lookup_"^newName()
-		    val code2 = [Mips.ADD(t2,t2,y)]
+		    val code2 = [Mips.ADD(t2,t1,y)]
 		 in
-		    (code1 @ code2, Type.Ref Type.Char, Mem(y,t1))
+		    (code1 @ code2, Type.Ref Type.Char, Mem(y,"0"))
 		end
 	       | SOME (ty, y) => raise Error ("Variable is not a reference "^s,pos)
 	       | NONE => raise Error ("Unknown variable "^s,pos))
@@ -534,8 +497,7 @@ fun compile funs =
 
 	 Mips.LABEL "walloc",
 	 Mips.MOVE ("4","2"),
-	 Mips.ADD ("4","4","4"),
-	 Mips.ADD ("4","4","4"),
+	 Mips.ADD ("4","4","2"),
 	 Mips.LI ("2","9"),
 	 Mips.SYSCALL,
 	 Mips.JR (RA,[]),
