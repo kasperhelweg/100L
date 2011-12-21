@@ -66,7 +66,7 @@ rule Token = parse
   (* The string expression below is set to '+', meaning that it's not possible to write "", i.e. a null string. It's fine to write " " however. Maybe it should be set to '*'? *)
   | [`"`][`a`-`z` `A`-`Z` `0`-`9` ` ` `!` `#` `$` `%` `&` `(` `)` `*` `,` `-` `.` `/` `:` `;` `<` `=` `>` `?` `@` `[` `]` `^` `_` ``` `{` `|` `}` `~`]+[`"`]
                         (* Maybe strip the ""*)
-                        { Parser.STRINGCONST (getLexeme lexbuf, getPos lexbuf) }
+                        { Parser.STRINGCONST ( getLexeme lexbuf, getPos lexbuf) }
    
 
   (* This one is probably broken for now *)

@@ -1,0 +1,17 @@
+int main(){
+
+    char *s;
+    char *k;    
+    s = "kasssss\0";
+    putstring(s);
+    return 0;
+
+}
+
+/*
+char *f(){
+     char *ss;
+     return ss;
+
+}
+*/

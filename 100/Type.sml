@@ -29,6 +29,7 @@ fun getPos (p1, p2) = "(" ^ (Int.toString p1) ^ ", " ^ (Int.toString p2) ^ ")"
 
 *)
 (*---------------------------------------------------------------------------------------------------------*)
+(*
 fun printV [] = (TextIO.output(TextIO.stdOut, "    *\n") ; ()) 
   | printV ((s, t)::ds) = case t of
                             Int => ((TextIO.output(TextIO.stdOut, "    vtable: " ^ s ^ " : of Int\n") ; ()) ; printV ds)
@@ -36,6 +37,7 @@ fun printV [] = (TextIO.output(TextIO.stdOut, "    *\n") ; ())
                           | Ref Int => ((TextIO.output(TextIO.stdOut,  "    vtable: " ^ s ^ " : of Ref Int\n") ; ()) ; printV ds)
                           | Ref Char => ((TextIO.output(TextIO.stdOut,  "    vtable: " ^ s ^ " : of Ref Char\n") ; ()) ; printV ds)
 
+*)
 fun convertType (S100.Int _) = Int
   | convertType (S100.Char _) = Char
 
@@ -137,7 +139,7 @@ and checkLval lv vtable ftable =
  Extend the symboltable if var is not already declared.
  Types are promoted.
  *)
-fun extend [] _ vtable =  (printV vtable ; vtable)                    
+fun extend [] _ vtable =  vtable (*(printV vtable ; vtable)*)                    
   | extend (S100.Val (x,p)::sids) t vtable =
     (case lookup x vtable of
        NONE => extend sids t ((x, promoteType(t))::vtable)

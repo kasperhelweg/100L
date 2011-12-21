@@ -66,7 +66,7 @@ and action_8 lexbuf = (
 and action_7 lexbuf = (
  Parser.EQUAL (getPos lexbuf)  )
 and action_6 lexbuf = (
- Parser.STRINGCONST (getLexeme lexbuf, getPos lexbuf) )
+ Parser.STRINGCONST ( getLexeme lexbuf, getPos lexbuf) )
 and action_5 lexbuf = (
 Parser.CHARCONST ((fn s => let val c = String.sub(s, 1) in case c of #"\\"  => String.sub(s, 2) | _ => c end) (getLexeme lexbuf), getPos lexbuf) )
 and action_4 lexbuf = (

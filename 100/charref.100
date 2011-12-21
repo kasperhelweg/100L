@@ -2,17 +2,25 @@
 
 int main()
 {
-  char *s; int i;
+  char *s;
+  int i;
   int a;    
-  char b;
-  b = 'a';
-  b = s[0];	
-  i = getint();
-  s = f();
   
+  i = getint();	
+ 
+
+ 
+  s = f(); 
   
-  return putint(s[i]);
+
+return putint(s[i]);
+  
+ 	 
 }
+
+
 
 char *f()
   return "abracadabra";
+
+
