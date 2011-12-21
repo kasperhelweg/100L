@@ -50,9 +50,9 @@
   36  Exps1 : Exp
   37        | Exp COMMA Exps
 
-  38  Lval : ID
-  39       | ID POINTER
-  40       | ID LBRAC Exp RBRAC
+  38  Lval : ID POINTER
+  39       | ID LBRAC Exp RBRAC
+  40       | ID
 
   41  %entry% : '\001' Prog
 
@@ -229,22 +229,22 @@ state 19
 
 state 20
 	Exp : ID . LPAR Exps RPAR  (32)
-	Lval : ID .  (38)
-	Lval : ID . POINTER  (39)
-	Lval : ID . LBRAC Exp RBRAC  (40)
+	Lval : ID . POINTER  (38)
+	Lval : ID . LBRAC Exp RBRAC  (39)
+	Lval : ID .  (40)
 
 	LBRAC  shift 34
 	LPAR  shift 35
 	POINTER  shift 36
-	ASSIGN  reduce 38
-	COMMA  reduce 38
-	EQUAL  reduce 38
-	LESS  reduce 38
-	MINUS  reduce 38
-	PLUS  reduce 38
-	RBRAC  reduce 38
-	RPAR  reduce 38
-	SEMICOLON  reduce 38
+	ASSIGN  reduce 40
+	COMMA  reduce 40
+	EQUAL  reduce 40
+	LESS  reduce 40
+	MINUS  reduce 40
+	PLUS  reduce 40
+	RBRAC  reduce 40
+	RPAR  reduce 40
+	SEMICOLON  reduce 40
 
 
 state 21
@@ -375,7 +375,7 @@ state 33
 
 
 state 34
-	Lval : ID LBRAC . Exp RBRAC  (40)
+	Lval : ID LBRAC . Exp RBRAC  (39)
 
 	CHARCONST  shift 19
 	ID  shift 20
@@ -406,9 +406,9 @@ state 35
 
 
 state 36
-	Lval : ID POINTER .  (39)
+	Lval : ID POINTER .  (38)
 
-	.  reduce 39
+	.  reduce 38
 
 
 state 37
@@ -594,7 +594,7 @@ state 50
 	Exp : Exp . MINUS Exp  (29)
 	Exp : Exp . LESS Exp  (30)
 	Exp : Exp . EQUAL Exp  (31)
-	Lval : ID LBRAC Exp . RBRAC  (40)
+	Lval : ID LBRAC Exp . RBRAC  (39)
 
 	EQUAL  shift 42
 	LESS  shift 43
@@ -803,9 +803,9 @@ state 66
 
 
 state 67
-	Lval : ID LBRAC Exp RBRAC .  (40)
+	Lval : ID LBRAC Exp RBRAC .  (39)
 
-	.  reduce 40
+	.  reduce 39
 
 
 state 68

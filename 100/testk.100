@@ -1,10 +1,17 @@
 int main(){
 
-    char *s;
-    char *k;    
-    s = "kasper";
-    putstring("Nielsss");
-    return 0;
+    int *c;
+    
+    
+
+   
+
+    int i;
+c* = 12;
+    i = 2;
+    i = i +2;
+    putint(i);
+    return i;
 
 }
 

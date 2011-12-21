@@ -25,15 +25,15 @@ fun isIn x [] = false
                                 
 fun convertType (S100.Int _) = Type.Int
   | convertType (S100.Char _) = Type.Char                                
-(*
+
 fun printV [] = (TextIO.output(TextIO.stdOut, "    *\n") ; ()) 
   | printV ((s,(t,y))::ds) = case t of
                             Type.Int => ((TextIO.output(TextIO.stdOut, "    vtable: " ^ s ^ " : of Int. " ^ y ^ "\n" ) ; ()) ; printV ds)
                           | Type.Char => ((TextIO.output(TextIO.stdOut,  "    vtable: " ^ s ^ " : of Char. " ^ y ^ "\n") ; ()) ; printV ds)
                           | Type.Ref Type.Int => ((TextIO.output(TextIO.stdOut,  "    vtable: " ^ s ^ " : of Ref Int. " ^ y ^ "\n") ; ()) ; printV ds)
                           | Type.Ref Type.Char => ((TextIO.output(TextIO.stdOut,  "    vtable: " ^ s ^ " : of Ref Char. " ^ y ^ "\n") ; ()) ; printV ds)
-*)
-fun extend [] _ vtable =  vtable
+
+fun extend [] _ vtable =  (printV vtable ; vtable)
   | extend (S100.Val (x,p)::sids) t vtable = let
       val y = newName ()
     in
@@ -41,14 +41,14 @@ fun extend [] _ vtable =  vtable
 	 NONE => extend sids t ((x,(t,y^x))::vtable)
        | SOME _ => raise Error ("Double declaration of "^x,p))
     end
-  | extend (S100.Ref (x,p)::sids) t vtable =
+  | extend (S100.Ref (x,p)::sids) t vtable = (print "FUCK"; 
     let
       val y = newName ()
     in
       (case lookup x vtable of
 	 NONE => extend sids t ((x,(Type.Ref t,y^x))::vtable)
        | SOME _ => raise Error ("Double declaration of "^x,p))
-    end
+    end)
 
 fun extendDecs [] = []
   | extendDecs ((t,sids)::ds) =
@@ -183,7 +183,7 @@ fun compileExp e vtable ftable place =
 	    val t2 = "_lookup2_"^newName()
 	  in
 	    (Type.Ref (Type.Char), 
-	     code0 @ code1 @ [Mips.LI(t1, "2"),
+	     code0 @ code1 @ [Mips.LI(t1, y),
 			      Mips.ADD(t2, t1, i),
 			      Mips.SB(t, t2, "0")])
 	  end

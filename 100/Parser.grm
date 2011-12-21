@@ -108,7 +108,10 @@ Exps1:	  Exp		{ [$1] }
 			{ $1 :: $3 }
 ;
 
-Lval :	  ID		{ S100.Var $1 }
-        | ID POINTER    { S100.Deref $1 } 
+Lval :
+          ID POINTER    { S100.Deref $1 } 
         | ID LBRAC Exp RBRAC {S100.Lookup (#1 $1, $3, #2 $1)}
+        | ID		{ S100.Var $1 }
+       
+       
 ;

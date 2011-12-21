@@ -211,6 +211,7 @@ fun checkStat s vtable ftable t [] p =   ((TextIO.output(TextIO.stdOut, "warning
 
 (*Check that a function can return a value. The algorithm works by maintaining a stack of markers, mTable, pushing and popping markers.
  If, in the end, the mTable is empty it means that the function can return. Note, that this will produce warnings on unreachable code segments.*)           
+
 fun checkReturn [] _ _ = ()
   | checkReturn [1] _ _ = ()  
   | checkReturn _ sf p = raise Error ("Function '" ^ (getName sf) ^  "' should always return a value" , p)
