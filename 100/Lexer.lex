@@ -50,6 +50,7 @@ rule Token = parse
   | [`a`-`z` `A`-`Z`] [`a`-`z` `A`-`Z` `0`-`9` `_`]*
                         { keyword (getLexeme lexbuf,getPos lexbuf) }
 
+
 (* | `\039` `\\`? [`a`-`z` `A`-`Z` `0`-`9` ` ` `!` `#` `$` `%` `&` `(` `)` `*` `,` `-` `.` `/` `:` `;` `<` `=` `>` `?` `@` `[` `\` `]` `^` `_` `\`` `{` `|` `}` `~`] `\039` *)
 
  
@@ -69,7 +70,23 @@ rule Token = parse
                         { Parser.STRINGCONST ( String.substring(getLexeme lexbuf,3, (size(getLexeme lexbuf) - 3)), getPos lexbuf) }
    
 
-  (* This one is probably broken for now *)
+  | `'`([`\032` `\033` `\035`-`\038` `\040`-`\091` `\093`-`\126`] | ([`\092`][`\032`-`\126`]))`'` 
+                         {Parser.CHARCONST ((fn s => 
+					        let 
+					            val c = String.sub(s, 1) 
+					        in 
+					            case c of 
+					            #"\\"  => String.sub(s, 2) 
+					            | _ => c
+					        end) 
+					    (getLexeme lexbuf), getPos lexbuf) }
+
+  (* The string expression below is set to '+', meaning that it's not possible to write "", i.e. a null string. It's fine to write " " however. 
+   Maybe it should be set to '*'? *)
+  | [`"`]([`\032` `\033` `\035`-`\038` `\040`-`\091` `\093`-`\126`] | ([`\092`][`\032`-`\126`]))+[`"`]
+                        { Parser.STRINGCONST (getLexeme lexbuf, getPos lexbuf) }
+
+
   | [`=`][`=`]          { Parser.EQUAL (getPos lexbuf)  } 
   | `*`                 { Parser.POINTER(getPos lexbuf) }
   | `+`                 { Parser.PLUS (getPos lexbuf) }
