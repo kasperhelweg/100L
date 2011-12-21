@@ -9,6 +9,8 @@ type pos = int*int
 datatype Type = Int
               | Char
               | Ref of Type
+
+datatype Marker = M | !
 (* testing functions*)
 (*---------------------------------------------------------------------------------------------------------*)
 (*
@@ -100,10 +102,10 @@ fun checkExp e vtable ftable =
       )
 
     | S100.Less (e1,e2,p) =>
-      if checkExp e1 vtable ftable = checkExp e2 vtable ftable
+      if promoteType (checkExp e1 vtable ftable) = promoteType (checkExp e2 vtable ftable)
       then Int else raise Error ("Can't compare different types",p)
     | S100.Equal (e1, e2, p) => 
-       if checkExp e1 vtable ftable = promoteType (checkExp e2 vtable ftable)
+      if promoteType (checkExp e1 vtable ftable) = promoteType (checkExp e2 vtable ftable)
       then Int else raise Error ("Can't compare different types",p)
     | S100.Call (f,es,p) =>
       (case lookup f ftable of
@@ -154,7 +156,7 @@ fun checkDecs [] = []
     extend (List.rev sids) (convertType t) (checkDecs ds)
 
 fun checkStat s vtable ftable t [] p =   ((TextIO.output(TextIO.stdOut, "warning: unreachable code in block at" ^ getPos(p)) ; 
-                                           checkStat s vtable ftable t [1] p)) 
+                                           checkStat s vtable ftable t [!] p)) 
   | checkStat s vtable ftable t (m::ms) p =
     case s of
       S100.EX e => (checkExp e vtable ftable; (m::ms))
@@ -162,7 +164,7 @@ fun checkStat s vtable ftable t [] p =   ((TextIO.output(TextIO.stdOut, "warning
       if checkExp e vtable ftable = Int
       then 
         let 
-          val mTable = (0::m::ms)
+          val mTable = (M::m::ms)
           val eval = checkStat s1 vtable ftable t mTable p
         in
           if eval = mTable then (m::ms) else eval
@@ -173,7 +175,7 @@ fun checkStat s vtable ftable t [] p =   ((TextIO.output(TextIO.stdOut, "warning
       if checkExp e vtable ftable = Int
       then
         let
-          val mTable = (0::m::ms) 
+          val mTable = (M::m::ms) 
           val eval =  checkStat s2 vtable ftable t (checkStat s1 vtable ftable t mTable p) p
         in
           if eval = mTable then (m::ms) else eval
@@ -184,7 +186,7 @@ fun checkStat s vtable ftable t [] p =   ((TextIO.output(TextIO.stdOut, "warning
       if checkExp e vtable ftable = Int
       then 
         let
-          val mTable = (0::m::ms)
+          val mTable = (M::m::ms)
           val eval = checkStat s vtable ftable t mTable p
         in
           if eval = mTable then (m::ms) else eval
@@ -213,11 +215,11 @@ fun checkStat s vtable ftable t [] p =   ((TextIO.output(TextIO.stdOut, "warning
  If, in the end, the mTable is empty it means that the function can return. Note, that this will produce warnings on unreachable code segments.*)           
 
 fun checkReturn [] _ _ = ()
-  | checkReturn [1] _ _ = ()  
+  | checkReturn [!] _ _ = ()  
   | checkReturn _ sf p = raise Error ("Function '" ^ (getName sf) ^  "' should always return a value" , p)
                              
 fun checkFunDec (t,sf,decs,body,p) ftable =
-    let val rl = checkStat body (checkDecs decs) ftable ((fn ft => fn rt => ft = rt ) (getType t sf)) [0] p
+    let val rl = checkStat body (checkDecs decs) ftable ((fn ft => fn rt => ft = rt ) (getType t sf)) [M] p
     in
       checkReturn rl sf p
     (*(pr (a) ; ())*)
