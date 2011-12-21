@@ -71,7 +71,7 @@ val maxReg = 24      (* highest allocatable register *)
 	     
 datatype Location = Reg of string (* value is in register *)
 		  | Mem of string * string
-(* Value is in memory. value * register where offset is*)
+                   (* Value is in memory.*)
 			   
 (* compile expression *)
 fun compileExp e vtable ftable place =
@@ -98,11 +98,11 @@ fun compileExp e vtable ftable place =
 	      | insertString (c::cs) t = 
 		[Mips.ADDI(t1,"0", makeConst(ord(c))),
 		 Mips.SB(t1,t,"0"), 
-		 Mips.ADDI(t,t,makeConst(l))] 
+		 Mips.ADDI(t,t,"1")] 
 		@ (insertString cs t)
 		
 	in
-	    (Type.Char, [Mips.LI("2", makeConst(l+1)),
+	    (Type.Ref Type.Char, [Mips.LI("2", makeConst(l+1)),
 				    Mips.JAL("balloc", ["2"]),
 				    Mips.MOVE(place, "2")]
 				   @ (insertString CharList "2"))
@@ -158,7 +158,6 @@ fun compileExp e vtable ftable place =
 	case (ty,loc) of
           
 	  (Type.Int, Reg x) => 
-         
 	  (Type.Int,
 	   code0 @ code1 @ [Mips.MOVE (x,t), Mips.MOVE (place,t)])
 	| (Type.Char, Reg x) =>
@@ -177,7 +176,7 @@ fun compileExp e vtable ftable place =
 			      Mips.ADD(t2,t2,i),
 			      Mips.SW(t,t2,"0")])
 	  end
-	| (Type.Ref (Type.Char), Mem(y,i)) => (*HERE IT IS*)
+	| (Type.Ref (Type.Char), Mem(y,i)) => 
 	  let
 	    val t1 = "_lookup1_"^newName()
 	    val t2 = "_lookup2_"^newName()
@@ -204,9 +203,7 @@ fun compileExp e vtable ftable place =
         | (Type.Ref t, _) => 
           (Type.Ref t, code1 @ code2 @ [Mips.ADD (place,t1,t2)])
         | (_, _) =>
-          (Type.Int, code1 @ code2 @ [Mips.ADD (place,t1,t2)])
-          
-          
+          (Type.Int, code1 @ code2 @ [Mips.ADD (place,t1,t2)])          
       end
     | S100.Minus (e1,e2,pos) =>
       let
@@ -308,8 +305,7 @@ and compileLval lval vtable ftable =
         (case lookup x vtable of
            (*_kasper_ was here - no idea what this means*)
            SOME (Type.Ref ty,y) => ([], Type.Ref ty, Mem(y,"0"))
-         
-	 | SOME (ty,y) => ([], ty,Reg y)
+	 | SOME (ty,y) => ([], ty, Reg y)
 	 | NONE => raise Error ("Unknown variable "^x,p))
       | S100.Deref (s, pos) =>
 	(case lookup s vtable of
@@ -324,7 +320,21 @@ and compileLval lval vtable ftable =
 	in
 	    (case lookup s vtable of
                (*_kasper_ Changed this to be Type.Ref ty *)
-		 SOME (Type.Ref ty,y) => (code1, Type.Ref ty, Mem(y,t1))
+		 SOME (Type.Ref Type.Int , y) => 
+		 let
+		     val t2 = "_lookup_"^newName()
+		     val code2 = [Mips.SLL(t2,t1,"2"),
+				  Mips.ADD(t2,t2,y)]
+		 in
+		     (code1 @ code2, Type.Ref Type.Int, Mem(y,t1))
+		 end
+	       | SOME (Type.Ref Type.Char , y) => 
+		let
+		    val t2 = "_lookup_"^newName()
+		    val code2 = [Mips.ADD(t2,t2,y)]
+		 in
+		    (code1 @ code2, Type.Ref Type.Char, Mem(y,t1))
+		end
 	       | SOME (ty, y) => raise Error ("Variable is not a reference "^s,pos)
 	       | NONE => raise Error ("Unknown variable "^s,pos))
 	end
